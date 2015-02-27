@@ -16,7 +16,7 @@ Int facI ( Int n ) {
         r = r * n;
         n = n - 1;
     }
-    return r ;
+    return r;
 }
 
 // A main function to check the results
@@ -86,7 +86,7 @@ Int abs (Int n) { if (n < 0) return −n; else return n; }
 // list append
 [t] append ( [t] l1, [t] l2 ) {
     if ( isEmpty ( l1 ))
-        return l2 ;
+        return l2;
     else {
         l1.tl = append ( l1.tl, l2 );
         return l1;
