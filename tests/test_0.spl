@@ -46,7 +46,7 @@ Int product ( [ Int ] list ) {
     if ( isEmpty ( list ))
         return 1;
     else
-        return list.hd ∗ product ( list.tl );
+        return list.hd * product ( list.tl );
 }
 
 // Generates a list of integers from the first to the last argument
@@ -68,7 +68,7 @@ Int product ( [ Int ] list ) {
 }
 
 // Absolute value, in a strange layout
-Int abs (Int n) { if (n < 0) return −n; else return n; }
+Int abs (Int n) { if (n < 0) return -n; else return n; }
 
 // make a copy of a tuple with swapped elements
 (b, a) swapCopy ( (a, b) pair ) {
@@ -98,7 +98,7 @@ Int abs (Int n) { if (n < 0) return −n; else return n; }
     while ( ! isEmpty ( list ) && list.hd % 2 == 0)
         list = list.tl;
         if ( ! isEmpty ( list )) {
-            list.hd = list.hd ∗ list.hd;
+            list.hd = list.hd * list.hd;
             list.tl = squareOddNumbers( list.tl );
         }
     return list ;

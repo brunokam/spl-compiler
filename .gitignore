@@ -13,3 +13,6 @@ hs_err_pid*
 
 # Other directories
 .idea/
+
+# Other files
+.DS_Store
