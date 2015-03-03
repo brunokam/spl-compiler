@@ -1,0 +1,23 @@
+// Tests whether n is a prime number
+Bool isPrime(Int n) {
+    if (n < 2) {
+        return False;
+    }
+
+    Int i = 2;
+    Bool result = True;
+    while (i * i <= n) {
+        if (n % i == 0) {
+            return False;
+        }
+    }
+
+    return True;
+}
+
+Void main () {
+    Int n = 23;
+
+    Bool result = isPrime(n);
+    print(result);
+}
