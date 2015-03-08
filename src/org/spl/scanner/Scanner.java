@@ -93,11 +93,8 @@ public class Scanner {
             state = automaton.proceed(c);
 
             if (state == null) {
-                throw new LexicalException(
-                    it.getLineNumber(),
-                    it.getColumnNumber(),
-                    it.getTokenList()
-                );
+                it.close(ScannerAutomaton.tokenMap.get(lastState));
+                throw new LexicalException(c, it.getLineNumber(), it.getColumnNumber(), it.getTokenList());
             }
 
             // If the transition starts and ends in different states and previous state is not the start one

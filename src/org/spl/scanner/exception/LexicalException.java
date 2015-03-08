@@ -7,18 +7,22 @@ import java.util.LinkedList;
 
 public class LexicalException extends Exception {
 
+    private char m_invalidChar;
     private int m_lineNumber;
     private int m_columnNumber;
     private LinkedList<Pair<ScannerToken, String>> m_tokenList;
 
-    public LexicalException(int lineNumber, int columnNumber, LinkedList<Pair<ScannerToken, String>> tokenList) {
-        super(
-            "Error: invalid statement after \"" + tokenList.getLast().snd
-            + "\" at line " + lineNumber + ", column " + columnNumber
-        );
+    public LexicalException(char invalidChar, int lineNumber, int columnNumber, LinkedList<Pair<ScannerToken, String>> tokenList) {
+        super("Error: invalid character \"" + invalidChar + "\" after \"" + tokenList.getLast().snd +
+                "\" at line " + lineNumber + ", column " + columnNumber);
+        m_invalidChar = invalidChar;
         m_lineNumber = lineNumber;
         m_columnNumber = columnNumber;
         m_tokenList = tokenList;
+    }
+
+    public char getInvalidChar() {
+        return m_invalidChar;
     }
 
     public int getLineNumber() {
