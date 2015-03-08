@@ -1,7 +1,5 @@
 package org.spl.scanner;
 
-import org.spl.scanner.exception.LexicalException;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -446,70 +444,66 @@ public class ScannerAutomaton {
         acceptStateList.add(ScannerState.FIELD);
     }
 
-    private ScannerState currentState;
+    private ScannerState m_currentState;
 
     public ScannerAutomaton() {
-        currentState = ScannerState.START;
+        m_currentState = ScannerState.START;
     }
 
-    public ScannerState proceed(char c) throws LexicalException {
+    public ScannerState proceed(char c) {
         String SYMBOLS_BR = "()[]{}";
         String SYMBOLS_PNC = ";,";
 
         ScannerState state;
         if (Character.isLetter(c)) {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.LETTER);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.LETTER);
         } else if (Character.isDigit(c)) {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.DIGIT);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.DIGIT);
         } else if (SYMBOLS_BR.indexOf(c) != -1) {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.BRACKET);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.BRACKET);
         } else if (SYMBOLS_PNC.indexOf(c) != -1) {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.PUNCTUATION);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.PUNCTUATION);
         } else if (c == '+') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.PLUS);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.PLUS);
         } else if (c == '*') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.STAR);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.STAR);
         } else if (c == '%') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.PERCENT);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.PERCENT);
         } else if (c == ':') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.COLON);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.COLON);
         } else if (c == '-') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.MINUS);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.MINUS);
         } else if (c == '!') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.EXCLAMATION_MARK);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.EXCLAMATION_MARK);
         } else if (c == '=') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.EQUAL_SIGN);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.EQUAL_SIGN);
         } else if (c == '/') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.SLASH);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.SLASH);
         } else if (c == '<') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.LESS_THAN);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.LESS_THAN);
         } else if (c == '>') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.GREATER_THAN);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.GREATER_THAN);
         } else if (c == '&') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.AMPERSAND);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.AMPERSAND);
         } else if (c == '|') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.BAR);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.BAR);
         } else if (c == '_') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.UNDERSCORE);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.UNDERSCORE);
         } else if (c == '.') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.DOT);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.DOT);
         } else if (c == '\'') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.APOSTROPHE);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.APOSTROPHE);
         } else if (c == '\n') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.NEW_LINE);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.NEW_LINE);
         } else if (c == '\t') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.TAB);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.TAB);
         } else if (c == ' ') {
-            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.SPACE);
+            state = ScannerAutomaton.transitionMap.get(m_currentState).get(ScannerSymbol.SPACE);
         } else {
             state = null;
         }
 
-        if (state == null) {
-            throw new LexicalException();
-        }
-
-        currentState = state;
+        m_currentState = state;
         return state;
     }
 }

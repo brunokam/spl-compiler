@@ -9,51 +9,75 @@ public class Scanner {
 
     private static class ScannerIterator {
 
-        private String input; // Input string
-        private int inputPos; // Position of the character in input which is currently processed
-        private LinkedList<Pair<ScannerToken, String>> tokenList; // List of tokenList
-        private String preToken; // Current string which represents a token under construction
+        private String m_input; // Input string
+        private int m_inputPos; // Position of the character in input which is currently processed
+        private LinkedList<Pair<ScannerToken, String>> m_tokenList; // List of tokens
+        private String m_preToken; // Current string which represents a token under construction
 
         public ScannerIterator(String in) {
-            input = in;
-            inputPos = 0;
-            tokenList = new LinkedList<Pair<ScannerToken, String>>();
-            preToken = "";
+            m_input = in;
+            m_inputPos = 0;
+            m_tokenList = new LinkedList<Pair<ScannerToken, String>>();
+            m_preToken = "";
         }
 
         public boolean hasNext() {
-            return inputPos < input.length();
+            return m_inputPos < m_input.length();
         }
 
         public char next() {
-            if (inputPos >= input.length()) {
+            if (m_inputPos >= m_input.length()) {
                 throw new IndexOutOfBoundsException();
             }
 
-            return input.charAt(inputPos++);
+            return m_input.charAt(m_inputPos++);
         }
 
         public int length() {
-            return preToken.length();
+            return m_preToken.length();
         }
 
         public void pass(char c) {
             if ("\n\t ".indexOf(c) == -1) {
-                preToken += c;
+                m_preToken += c;
             }
         }
 
         public void clear() {
-            preToken = "";
+            m_preToken = "";
         }
 
         public void close(ScannerToken token) {
-            tokenList.add(new Pair<ScannerToken, String>(token, preToken));
-            preToken = "";
+            m_tokenList.add(new Pair<ScannerToken, String>(token, m_preToken));
+            m_preToken = "";
         }
 
         public LinkedList<Pair<ScannerToken, String>> getTokenList() {
-            return tokenList;
+            return m_tokenList;
+        }
+
+        public int getLineNumber() {
+            int lines = 1;
+            int currentLine = -1;
+            for (int i = 0; i < m_input.length(); ++i) {
+                if (m_input.charAt(i) == '\n') {
+                    if (currentLine == -1 && i >= m_inputPos - 1) {
+                        currentLine = lines;
+                    }
+                    ++lines;
+                }
+            }
+
+            return currentLine;
+        }
+
+        public int getColumnNumber() {
+            int columnNumber = 0;
+            for (int i = m_inputPos - 1; i >= 0 && m_input.charAt(i) != '\n'; --i) {
+                ++columnNumber;
+            }
+
+            return columnNumber;
         }
     }
 
@@ -67,6 +91,15 @@ public class Scanner {
 
             lastState = state;
             state = automaton.proceed(c);
+
+            if (state == null) {
+                throw new LexicalException(
+                    "Error: failed to parse the input",
+                    it.getLineNumber(),
+                    it.getColumnNumber(),
+                    it.getTokenList()
+                );
+            }
 
             // If the transition starts and ends in different states and previous state is not the start one
             if (lastState != ScannerState.START && state != lastState) {

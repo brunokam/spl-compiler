@@ -26,7 +26,7 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (LexicalException e) {
-            System.out.println("Error: failed to parse the input");
+            System.out.println("Error: failed to parse the input at line " + e.getLineNumber() + ", column " + e.getColumnNumber());
         }
     }
 }
