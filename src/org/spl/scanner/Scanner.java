@@ -94,7 +94,6 @@ public class Scanner {
 
             if (state == null) {
                 throw new LexicalException(
-                    "Error: failed to parse the input",
                     it.getLineNumber(),
                     it.getColumnNumber(),
                     it.getTokenList()

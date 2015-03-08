@@ -11,12 +11,11 @@ public class LexicalException extends Exception {
     private int m_columnNumber;
     private LinkedList<Pair<ScannerToken, String>> m_tokenList;
 
-    public LexicalException() {
-        super();
-    }
-
-    public LexicalException(String message, int lineNumber, int columnNumber, LinkedList<Pair<ScannerToken, String>> tokenList) {
-        super(message);
+    public LexicalException(int lineNumber, int columnNumber, LinkedList<Pair<ScannerToken, String>> tokenList) {
+        super(
+            "Error: invalid statement after \"" + tokenList.getLast().snd
+            + "\" at line " + lineNumber + ", column " + columnNumber
+        );
         m_lineNumber = lineNumber;
         m_columnNumber = columnNumber;
         m_tokenList = tokenList;
