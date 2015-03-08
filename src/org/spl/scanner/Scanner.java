@@ -73,8 +73,11 @@ public class Scanner {
                 // If the transition starts and ends in two accept states
                 if (ScannerAutomaton.acceptStateList.contains(lastState) && ScannerAutomaton.acceptStateList.contains(state)) {
                     it.close(ScannerAutomaton.tokenMap.get(lastState));
-                    it.pass(c);
-                } else {
+                }
+
+                it.pass(c);
+
+                if (state == ScannerState.START) {
                     it.clear();
                 }
             } else {

@@ -31,6 +31,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.GREATER_THAN, ScannerState.GREATER_THAN);
         map.put(ScannerSymbol.AMPERSAND, ScannerState.AMPERSAND);
         map.put(ScannerSymbol.BAR, ScannerState.BAR);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -82,6 +83,22 @@ public class ScannerAutomaton {
         transitionMap.put(ScannerState.NUMERIC, map);
 
         map = new HashMap<ScannerSymbol, ScannerState>();
+        map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
+        map.put(ScannerSymbol.PUNCTUATION, ScannerState.PUNCTUATION);
+        map.put(ScannerSymbol.PLUS, ScannerState.OPERATOR);
+        map.put(ScannerSymbol.COLON, ScannerState.OPERATOR);
+        map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
+        map.put(ScannerSymbol.EQUAL_SIGN, ScannerState.ASSIGNMENT);
+        map.put(ScannerSymbol.LESS_THAN, ScannerState.LESS_THAN);
+        map.put(ScannerSymbol.GREATER_THAN, ScannerState.GREATER_THAN);
+        map.put(ScannerSymbol.AMPERSAND, ScannerState.AMPERSAND);
+        map.put(ScannerSymbol.BAR, ScannerState.BAR);
+        map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
+        map.put(ScannerSymbol.TAB, ScannerState.START);
+        map.put(ScannerSymbol.SPACE, ScannerState.START);
+        transitionMap.put(ScannerState.CHARACTER, map);
+
+        map = new HashMap<ScannerSymbol, ScannerState>();
         map.put(ScannerSymbol.LETTER, ScannerState.IDENTIFIER);
         map.put(ScannerSymbol.DIGIT, ScannerState.NUMERIC);
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
@@ -98,6 +115,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.GREATER_THAN, ScannerState.GREATER_THAN);
         map.put(ScannerSymbol.AMPERSAND, ScannerState.AMPERSAND);
         map.put(ScannerSymbol.BAR, ScannerState.BAR);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -111,6 +129,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
         map.put(ScannerSymbol.SLASH, ScannerState.SLASH);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -122,6 +141,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.PUNCTUATION, ScannerState.PUNCTUATION);
         map.put(ScannerSymbol.SLASH, ScannerState.SLASH);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -134,6 +154,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
         map.put(ScannerSymbol.EQUAL_SIGN, ScannerState.EQUAL);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -145,6 +166,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EQUAL_SIGN, ScannerState.LESS_THAN_OR_EQUAL);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -156,6 +178,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EQUAL_SIGN, ScannerState.GREATER_THAN_OR_EQUAL);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -188,6 +211,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -199,6 +223,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -210,6 +235,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -221,6 +247,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -232,6 +259,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -243,6 +271,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BRACKET, ScannerState.BRACKET);
         map.put(ScannerSymbol.MINUS, ScannerState.MINUS);
         map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.EXCLAMATION_MARK);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.APOSTROPHE);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.START);
         map.put(ScannerSymbol.SPACE, ScannerState.START);
@@ -272,6 +301,32 @@ public class ScannerAutomaton {
         transitionMap.put(ScannerState.BAR, map);
 
         map = new HashMap<ScannerSymbol, ScannerState>();
+        map.put(ScannerSymbol.LETTER, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.DIGIT, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.BRACKET, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.PUNCTUATION, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.STAR, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.PLUS, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.PERCENT, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.COLON, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.MINUS, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.EXCLAMATION_MARK, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.EQUAL_SIGN, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.SLASH, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.LESS_THAN, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.GREATER_THAN, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.AMPERSAND, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.BAR, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.UNDERSCORE, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.DOT, ScannerState.ONE_LETTER);
+        map.put(ScannerSymbol.SPACE, ScannerState.ONE_LETTER);
+        transitionMap.put(ScannerState.APOSTROPHE, map);
+
+        map = new HashMap<ScannerSymbol, ScannerState>();
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.CHARACTER);
+        transitionMap.put(ScannerState.ONE_LETTER, map);
+
+        map = new HashMap<ScannerSymbol, ScannerState>();
         map.put(ScannerSymbol.LETTER, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.DIGIT, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.BRACKET, ScannerState.MULTI_LINE_COMMENT);
@@ -290,6 +345,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BAR, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.UNDERSCORE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.DOT, ScannerState.MULTI_LINE_COMMENT);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.TAB, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.SPACE, ScannerState.MULTI_LINE_COMMENT);
@@ -314,6 +370,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BAR, ScannerState.ONE_LINE_COMMENT);
         map.put(ScannerSymbol.UNDERSCORE, ScannerState.ONE_LINE_COMMENT);
         map.put(ScannerSymbol.DOT, ScannerState.ONE_LINE_COMMENT);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.ONE_LINE_COMMENT);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.START);
         map.put(ScannerSymbol.TAB, ScannerState.ONE_LINE_COMMENT);
         map.put(ScannerSymbol.SPACE, ScannerState.ONE_LINE_COMMENT);
@@ -338,6 +395,7 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.BAR, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.UNDERSCORE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.DOT, ScannerState.MULTI_LINE_COMMENT);
+        map.put(ScannerSymbol.APOSTROPHE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.NEW_LINE, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.TAB, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.SPACE, ScannerState.MULTI_LINE_COMMENT);
@@ -346,6 +404,7 @@ public class ScannerAutomaton {
         // Token map
         tokenMap.put(ScannerState.IDENTIFIER, ScannerToken.IDENTIFIER);
         tokenMap.put(ScannerState.NUMERIC, ScannerToken.NUMERIC);
+        tokenMap.put(ScannerState.CHARACTER, ScannerToken.CHARACTER);
         tokenMap.put(ScannerState.BRACKET, ScannerToken.BRACKET);
         tokenMap.put(ScannerState.PUNCTUATION, ScannerToken.PUNCTUATION);
         tokenMap.put(ScannerState.OPERATOR, ScannerToken.OPERATOR);
@@ -361,8 +420,6 @@ public class ScannerAutomaton {
         tokenMap.put(ScannerState.AND, ScannerToken.OPERATOR);
         tokenMap.put(ScannerState.OR, ScannerToken.OPERATOR);
         tokenMap.put(ScannerState.SLASH, ScannerToken.OPERATOR);
-//        tokenMap.put(State.AMPERSAND, Token.OPERATOR);
-//        tokenMap.put(State.BAR, Token.OPERATOR);
         tokenMap.put(ScannerState.STAR, ScannerToken.OPERATOR);
         tokenMap.put(ScannerState.FIELD, ScannerToken.FIELD);
 
@@ -370,6 +427,7 @@ public class ScannerAutomaton {
         acceptStateList.add(ScannerState.START);
         acceptStateList.add(ScannerState.IDENTIFIER);
         acceptStateList.add(ScannerState.NUMERIC);
+        acceptStateList.add(ScannerState.CHARACTER);
         acceptStateList.add(ScannerState.BRACKET);
         acceptStateList.add(ScannerState.PUNCTUATION);
         acceptStateList.add(ScannerState.OPERATOR);
@@ -435,6 +493,8 @@ public class ScannerAutomaton {
             state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.UNDERSCORE);
         } else if (c == '.') {
             state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.DOT);
+        } else if (c == '\'') {
+            state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.APOSTROPHE);
         } else if (c == '\n') {
             state = ScannerAutomaton.transitionMap.get(currentState).get(ScannerSymbol.NEW_LINE);
         } else if (c == '\t') {
