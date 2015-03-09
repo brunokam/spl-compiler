@@ -53,7 +53,6 @@ public class Scanner {
             if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
                 finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
             } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
-
                 finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(ScannerTokenMaps.CUSTOM_TOKEN);
             } else {
                 throw new TokenizationException(m_tokenString, getLineNumber(),
@@ -111,7 +110,8 @@ public class Scanner {
             }
 
             // If the transition starts and ends in different states and previous state is not the start one
-            if (lastState != ScannerState.START && state != lastState) {
+            if (lastState != ScannerState.START && (state != lastState ||
+                    (lastState == ScannerState.BRACKET && state == ScannerState.BRACKET))) { // Adjacent brackets hack
                 // If the transition starts and ends in two accept states
                 if (ScannerAutomaton.acceptStateList.contains(lastState) &&
                         ScannerAutomaton.acceptStateList.contains(state)) {
@@ -128,6 +128,7 @@ public class Scanner {
             }
         }
 
-        return it.getTokenList();
+        ScannerPostprocessor postprocessor = new ScannerPostprocessor();
+        return postprocessor.run(it.getTokenList());
     }
 }

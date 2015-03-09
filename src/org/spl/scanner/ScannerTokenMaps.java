@@ -72,8 +72,8 @@ public class ScannerTokenMaps {
         map.put("!=", ScannerToken.Final.OP_NOT_EQUAL);
         map.put("<", ScannerToken.Final.OP_LESS_THAN);
         map.put(">", ScannerToken.Final.OP_GREATER_THAN);
-        map.put("<=", ScannerToken.Final.OP_LESS_OR_EQUAL);
-        map.put(">=", ScannerToken.Final.OP_GREATER_OR_EQUAL);
+        map.put("<=", ScannerToken.Final.OP_LESS_THAN_OR_EQUAL);
+        map.put(">=", ScannerToken.Final.OP_GREATER_THAN_OR_EQUAL);
         map.put("&&", ScannerToken.Final.OP_AND);
         map.put("||", ScannerToken.Final.OP_OR);
         map.put("=", ScannerToken.Final.OP_ASSIGN);
