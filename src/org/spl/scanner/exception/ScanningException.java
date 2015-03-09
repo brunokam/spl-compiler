@@ -1,7 +1,6 @@
 package org.spl.scanner.exception;
 
-import com.sun.tools.javac.util.Pair;
-import org.spl.scanner.ScannerToken;
+import org.spl.common.TokenInfo;
 
 import java.util.LinkedList;
 
@@ -10,11 +9,11 @@ public class ScanningException extends Exception {
     private char m_invalidChar;
     private int m_lineNumber;
     private int m_columnNumber;
-    private LinkedList<Pair<ScannerToken.Final, String>> m_tokenList;
+    private LinkedList<TokenInfo> m_tokenList;
 
     public ScanningException(char invalidChar, int lineNumber, int columnNumber,
-                             LinkedList<Pair<ScannerToken.Final, String>> tokenList) {
-        super("Error: invalid character \"" + invalidChar + "\" after \"" + tokenList.getLast().snd +
+                             LinkedList<TokenInfo> tokenList) {
+        super("Error: invalid character \"" + invalidChar + "\" after \"" + tokenList.getLast().getString() +
                 "\" at line " + lineNumber + ", column " + columnNumber);
         m_invalidChar = invalidChar;
         m_lineNumber = lineNumber;
@@ -34,7 +33,7 @@ public class ScanningException extends Exception {
         return m_columnNumber;
     }
 
-    public LinkedList<Pair<ScannerToken.Final, String>> getTokenList() {
+    public LinkedList<TokenInfo> getTokenList() {
         return m_tokenList;
     }
 }

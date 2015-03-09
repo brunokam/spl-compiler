@@ -1,39 +1,44 @@
 package org.spl.scanner;
 
 import com.sun.tools.javac.util.Pair;
+import org.spl.common.TokenInfo;
+import org.spl.common.Token;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 public class ScannerPostprocessor {
 
-    private final static HashMap<Pair<ScannerToken.Final, ScannerToken.Final>, Pair<ScannerToken.Final, String>> doubleOperators =
-            new HashMap<Pair<ScannerToken.Final, ScannerToken.Final>, Pair<ScannerToken.Final, String>>();
+    private final static HashMap<Pair<Token, Token>, TokenInfo> doubleTokens =
+            new HashMap<Pair<Token, Token>, TokenInfo>();
 
     static {
-        doubleOperators.put(
-                new Pair<ScannerToken.Final, ScannerToken.Final>(ScannerToken.Final.OP_ASSIGN, ScannerToken.Final.OP_ASSIGN),
-                new Pair<ScannerToken.Final, String>(ScannerToken.Final.OP_EQUAL, "=="));
-        doubleOperators.put(
-                new Pair<ScannerToken.Final, ScannerToken.Final>(ScannerToken.Final.OP_NEGATE, ScannerToken.Final.OP_ASSIGN),
-                new Pair<ScannerToken.Final, String>(ScannerToken.Final.OP_NOT_EQUAL, "!="));
-        doubleOperators.put(
-                new Pair<ScannerToken.Final, ScannerToken.Final>(ScannerToken.Final.OP_LESS_THAN, ScannerToken.Final.OP_ASSIGN),
-                new Pair<ScannerToken.Final, String>(ScannerToken.Final.OP_LESS_THAN_OR_EQUAL, "<="));
-        doubleOperators.put(
-                new Pair<ScannerToken.Final, ScannerToken.Final>(ScannerToken.Final.OP_GREATER_THAN, ScannerToken.Final.OP_ASSIGN),
-                new Pair<ScannerToken.Final, String>(ScannerToken.Final.OP_GREATER_THAN_OR_EQUAL, ">="));
+        doubleTokens.put(
+                new Pair<Token, Token>(Token.OP_ASSIGN, Token.OP_ASSIGN),
+                new TokenInfo(Token.OP_EQUAL, "=="));
+        doubleTokens.put(
+                new Pair<Token, Token>(Token.OP_NEGATE, Token.OP_ASSIGN),
+                new TokenInfo(Token.OP_NOT_EQUAL, "!="));
+        doubleTokens.put(
+                new Pair<Token, Token>(Token.OP_LESS_THAN, Token.OP_ASSIGN),
+                new TokenInfo(Token.OP_LESS_THAN_OR_EQUAL, "<="));
+        doubleTokens.put(
+                new Pair<Token, Token>(Token.OP_GREATER_THAN, Token.OP_ASSIGN),
+                new TokenInfo(Token.OP_GREATER_THAN_OR_EQUAL, ">="));
+        doubleTokens.put(
+                new Pair<Token, Token>(Token.BR_SQUARE_START, Token.BR_SQUARE_END),
+                new TokenInfo(Token.BR_SQUARE_BOTH, "[]"));
     }
 
-    public LinkedList<Pair<ScannerToken.Final, String>> run(LinkedList<Pair<ScannerToken.Final, String>> tokenList) {
-        LinkedList<Pair<ScannerToken.Final, String>> finalTokenList = new LinkedList<Pair<ScannerToken.Final, String>>();
+    public LinkedList<TokenInfo> run(LinkedList<TokenInfo> tokenList) {
+        LinkedList<TokenInfo> finalTokenList = new LinkedList<TokenInfo>();
 
         for (int i = 1; i <= tokenList.size(); ++i) {
             if (i < tokenList.size()) {
-                Pair<ScannerToken.Final, ScannerToken.Final> tokenPair =
-                        new Pair<ScannerToken.Final, ScannerToken.Final>(tokenList.get(i - 1).fst, tokenList.get(i).fst);
-                if (doubleOperators.containsKey(tokenPair)) {
-                    finalTokenList.add(doubleOperators.get(tokenPair));
+                Pair<Token, Token> tokenPair =
+                        new Pair<Token, Token>(tokenList.get(i - 1).getToken(), tokenList.get(i).getToken());
+                if (doubleTokens.containsKey(tokenPair)) {
+                    finalTokenList.add(doubleTokens.get(tokenPair));
                     ++i;
                 } else {
                     finalTokenList.add(tokenList.get(i - 1));

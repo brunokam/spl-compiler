@@ -1,6 +1,7 @@
 package org.spl.scanner;
 
-import com.sun.tools.javac.util.Pair;
+import org.spl.common.TokenInfo;
+import org.spl.common.Token;
 import org.spl.scanner.exception.ScanningException;
 import org.spl.scanner.exception.TokenizationException;
 
@@ -12,13 +13,13 @@ public class Scanner {
 
         private String m_input; // Input string
         private int m_inputPos; // Position of the character in input which is currently processed
-        private LinkedList<Pair<ScannerToken.Final, String>> m_tokenList; // List of tokens
+        private LinkedList<TokenInfo> m_tokenList; // List of tokens
         private String m_tokenString; // Current string which represents a token under construction
 
         public ScannerIterator(String in) {
             m_input = in;
             m_inputPos = 0;
-            m_tokenList = new LinkedList<Pair<ScannerToken.Final, String>>();
+            m_tokenList = new LinkedList<TokenInfo>();
             m_tokenString = "";
         }
 
@@ -48,8 +49,8 @@ public class Scanner {
             m_tokenString = "";
         }
 
-        public void close(ScannerToken.Preliminary preToken) throws TokenizationException {
-            ScannerToken.Final finalToken;
+        public void close(ScannerPreToken preToken) throws TokenizationException {
+            Token finalToken;
             if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
                 finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
             } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
@@ -59,11 +60,11 @@ public class Scanner {
                         getColumnNumber() - m_tokenString.length(), m_tokenList);
             }
 
-            m_tokenList.add(new Pair<ScannerToken.Final, String>(finalToken, m_tokenString));
+            m_tokenList.add(new TokenInfo(finalToken, m_tokenString));
             m_tokenString = "";
         }
 
-        public LinkedList<Pair<ScannerToken.Final, String>> getTokenList() {
+        public LinkedList<TokenInfo> getTokenList() {
             return m_tokenList;
         }
 
@@ -92,7 +93,7 @@ public class Scanner {
         }
     }
 
-    public static LinkedList<Pair<ScannerToken.Final, String>> scan(String code)
+    public static LinkedList<TokenInfo> scan(String code)
             throws ScanningException, TokenizationException {
         ScannerIterator it = new ScannerIterator(code);
         ScannerAutomaton automaton = new ScannerAutomaton();
