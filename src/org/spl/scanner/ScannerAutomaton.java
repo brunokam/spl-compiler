@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ScannerAutomaton {
-    public final static HashMap<ScannerState, HashMap<ScannerSymbol, ScannerState>> transitionMap = new HashMap<ScannerState, HashMap<ScannerSymbol, ScannerState>>();
-    public final static HashMap<ScannerState, ScannerToken> tokenMap = new HashMap<ScannerState, ScannerToken>();
+
+    private final static HashMap<ScannerState, HashMap<ScannerSymbol, ScannerState>> transitionMap = new HashMap<ScannerState, HashMap<ScannerSymbol, ScannerState>>();
     public final static ArrayList<ScannerState> acceptStateList = new ArrayList<ScannerState>();
 
     static {
@@ -398,28 +398,6 @@ public class ScannerAutomaton {
         map.put(ScannerSymbol.TAB, ScannerState.MULTI_LINE_COMMENT);
         map.put(ScannerSymbol.SPACE, ScannerState.MULTI_LINE_COMMENT);
         transitionMap.put(ScannerState.MULTI_LINE_COMMENT, map);
-
-        // Token map
-        tokenMap.put(ScannerState.IDENTIFIER, ScannerToken.IDENTIFIER);
-        tokenMap.put(ScannerState.NUMERIC, ScannerToken.NUMERIC);
-        tokenMap.put(ScannerState.CHARACTER, ScannerToken.CHARACTER);
-        tokenMap.put(ScannerState.BRACKET, ScannerToken.BRACKET);
-        tokenMap.put(ScannerState.PUNCTUATION, ScannerToken.PUNCTUATION);
-        tokenMap.put(ScannerState.OPERATOR, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.ASSIGNMENT, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.LESS_THAN, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.GREATER_THAN, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.EXCLAMATION_MARK, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.MINUS, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.EQUAL, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.LESS_THAN_OR_EQUAL, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.GREATER_THAN_OR_EQUAL, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.NOT_EQUAL, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.AND, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.OR, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.SLASH, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.STAR, ScannerToken.OPERATOR);
-        tokenMap.put(ScannerState.FIELD, ScannerToken.FIELD);
 
         // Accept state list
         acceptStateList.add(ScannerState.START);

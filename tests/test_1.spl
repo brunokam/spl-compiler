@@ -18,7 +18,7 @@ Bool isPrime(Int n) {
 /*
     Tests everything
 */
-Void main () {
+Void main( ) {
     Int n = 23;
 
     Bool result = isPrime(n);

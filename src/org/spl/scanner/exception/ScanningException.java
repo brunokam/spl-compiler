@@ -5,14 +5,15 @@ import org.spl.scanner.ScannerToken;
 
 import java.util.LinkedList;
 
-public class LexicalException extends Exception {
+public class ScanningException extends Exception {
 
     private char m_invalidChar;
     private int m_lineNumber;
     private int m_columnNumber;
-    private LinkedList<Pair<ScannerToken, String>> m_tokenList;
+    private LinkedList<Pair<ScannerToken.Final, String>> m_tokenList;
 
-    public LexicalException(char invalidChar, int lineNumber, int columnNumber, LinkedList<Pair<ScannerToken, String>> tokenList) {
+    public ScanningException(char invalidChar, int lineNumber, int columnNumber,
+                             LinkedList<Pair<ScannerToken.Final, String>> tokenList) {
         super("Error: invalid character \"" + invalidChar + "\" after \"" + tokenList.getLast().snd +
                 "\" at line " + lineNumber + ", column " + columnNumber);
         m_invalidChar = invalidChar;
@@ -33,7 +34,7 @@ public class LexicalException extends Exception {
         return m_columnNumber;
     }
 
-    public LinkedList<Pair<ScannerToken, String>> getTokenList() {
+    public LinkedList<Pair<ScannerToken.Final, String>> getTokenList() {
         return m_tokenList;
     }
 }

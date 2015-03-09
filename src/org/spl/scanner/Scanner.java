@@ -1,7 +1,8 @@
 package org.spl.scanner;
 
 import com.sun.tools.javac.util.Pair;
-import org.spl.scanner.exception.LexicalException;
+import org.spl.scanner.exception.ScanningException;
+import org.spl.scanner.exception.TokenizationException;
 
 import java.util.LinkedList;
 
@@ -11,14 +12,14 @@ public class Scanner {
 
         private String m_input; // Input string
         private int m_inputPos; // Position of the character in input which is currently processed
-        private LinkedList<Pair<ScannerToken, String>> m_tokenList; // List of tokens
-        private String m_preToken; // Current string which represents a token under construction
+        private LinkedList<Pair<ScannerToken.Final, String>> m_tokenList; // List of tokens
+        private String m_tokenString; // Current string which represents a token under construction
 
         public ScannerIterator(String in) {
             m_input = in;
             m_inputPos = 0;
-            m_tokenList = new LinkedList<Pair<ScannerToken, String>>();
-            m_preToken = "";
+            m_tokenList = new LinkedList<Pair<ScannerToken.Final, String>>();
+            m_tokenString = "";
         }
 
         public boolean hasNext() {
@@ -34,25 +35,36 @@ public class Scanner {
         }
 
         public int length() {
-            return m_preToken.length();
+            return m_tokenString.length();
         }
 
         public void pass(char c) {
             if ("\n\t ".indexOf(c) == -1) {
-                m_preToken += c;
+                m_tokenString += c;
             }
         }
 
         public void clear() {
-            m_preToken = "";
+            m_tokenString = "";
         }
 
-        public void close(ScannerToken token) {
-            m_tokenList.add(new Pair<ScannerToken, String>(token, m_preToken));
-            m_preToken = "";
+        public void close(ScannerToken.Preliminary preToken) throws TokenizationException {
+            ScannerToken.Final finalToken;
+            if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
+                finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
+            } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
+
+                finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(ScannerTokenMaps.CUSTOM_TOKEN);
+            } else {
+                throw new TokenizationException(m_tokenString, getLineNumber(),
+                        getColumnNumber() - m_tokenString.length(), m_tokenList);
+            }
+
+            m_tokenList.add(new Pair<ScannerToken.Final, String>(finalToken, m_tokenString));
+            m_tokenString = "";
         }
 
-        public LinkedList<Pair<ScannerToken, String>> getTokenList() {
+        public LinkedList<Pair<ScannerToken.Final, String>> getTokenList() {
             return m_tokenList;
         }
 
@@ -81,7 +93,8 @@ public class Scanner {
         }
     }
 
-    public static LinkedList<Pair<ScannerToken, String>> scan(String code) throws LexicalException {
+    public static LinkedList<Pair<ScannerToken.Final, String>> scan(String code)
+            throws ScanningException, TokenizationException {
         ScannerIterator it = new ScannerIterator(code);
         ScannerAutomaton automaton = new ScannerAutomaton();
 
@@ -93,15 +106,16 @@ public class Scanner {
             state = automaton.proceed(c);
 
             if (state == null) {
-                it.close(ScannerAutomaton.tokenMap.get(lastState));
-                throw new LexicalException(c, it.getLineNumber(), it.getColumnNumber(), it.getTokenList());
+                it.close(ScannerTokenMaps.preTokenMap.get(lastState));
+                throw new ScanningException(c, it.getLineNumber(), it.getColumnNumber(), it.getTokenList());
             }
 
             // If the transition starts and ends in different states and previous state is not the start one
             if (lastState != ScannerState.START && state != lastState) {
                 // If the transition starts and ends in two accept states
-                if (ScannerAutomaton.acceptStateList.contains(lastState) && ScannerAutomaton.acceptStateList.contains(state)) {
-                    it.close(ScannerAutomaton.tokenMap.get(lastState));
+                if (ScannerAutomaton.acceptStateList.contains(lastState) &&
+                        ScannerAutomaton.acceptStateList.contains(state)) {
+                    it.close(ScannerTokenMaps.preTokenMap.get(lastState));
                 }
 
                 it.pass(c);
