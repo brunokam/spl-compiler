@@ -131,7 +131,7 @@ public class Scanner {
             }
         }
 
-        Postprocessor postprocessor = new Postprocessor();
+        TokenListPostprocessor postprocessor = new TokenListPostprocessor();
         return postprocessor.run(it.getTokenList());
     }
 }

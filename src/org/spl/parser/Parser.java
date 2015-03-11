@@ -1,14 +1,13 @@
 package org.spl.parser;
 
+import org.spl.common.Nonterminal;
 import org.spl.common.Symbol;
 import org.spl.common.Token;
 import org.spl.common.TokenInfo;
 import org.spl.parser.exception.ParsingException;
-import org.spl.scanner.ASTNodeObject;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -45,25 +44,7 @@ public class Parser {
         }
     }
 
-    private String getInputForTreeGenerator(DefaultMutableTreeNode node) {
-        if (node.isLeaf()) {
-            return "[" + node.getUserObject().toString() + "] ";
-        } else {
-            String str = "[" + node.getUserObject().toString() + " ";
-
-            for (Enumeration e = node.children(); e.hasMoreElements(); ) {
-                DefaultMutableTreeNode child = (DefaultMutableTreeNode) e.nextElement();
-                str += getInputForTreeGenerator(child);
-
-                if (e.hasMoreElements()) {
-                    str += " ";
-                }
-            }
-
-            return str + "]";
-        }
-    }
-
+    // Checks whether the symbol's FIRST set contains the token
     private boolean testFirst(Symbol symbol, Token token) {
         if (symbol.getType().equals(SYMBOL_NONTERMINAL)) {
             return Grammar.firstSetMap.get((Nonterminal) symbol).contains(token);
@@ -72,9 +53,9 @@ public class Parser {
         }
     }
 
-    public void parse(LinkedList<TokenInfo> tokenList) throws ParsingException {
+    public DefaultMutableTreeNode parse(LinkedList<TokenInfo> tokenList) throws ParsingException {
         Stack<StackPair> stack = new Stack<StackPair>();
-        DefaultMutableTreeNode root = null; //new DefaultMutableTreeNode(new StackUserObject(Nonterminal.SPL));
+        DefaultMutableTreeNode root = null;
         stack.push(new StackPair(new ASTNodeObject(Nonterminal.SPL), null)); // Starting nonterminal
 
         // Iterates over the set of tokens
@@ -87,23 +68,27 @@ public class Parser {
                 stack.pop();
                 boolean ok = false; // If the current nonterminal is a proper one
 
-                for (ArrayList<Symbol> rules : Grammar.rulesMap.get((Nonterminal) peek.getObject().getSymbol())) {
-                    Symbol firstRule = rules.get(0);
+                for (ArrayList<Symbol> nextSymbols : Grammar.rulesMap.get((Nonterminal) peek.getObject().getSymbol())) {
+                    Symbol firstSymbol = nextSymbols.get(0);
 
-                    if (firstRule == null) {
+                    // If the current nonterminal can advance to an epsilon
+                    // Else if the current token or epsilon are included in the current nonterminal's FIRST set
+                    if (firstSymbol == null) {
                         ok = true;
                         break;
-                    } else if (testFirst(firstRule, currentToken) || testFirst(firstRule, null)) {
+                    } else if (testFirst(firstSymbol, currentToken) || testFirst(firstSymbol, null)) {
                         DefaultMutableTreeNode node = new DefaultMutableTreeNode(new ASTNodeObject(peek.getObject().getSymbol()));
+
+                        // Adds the current nonterminal to the tree
                         if (peek.getParent() != null) {
-//                            System.out.println(peek.getObject() + " " + rules.toString());
                             peek.getParent().add(node);
                         } else {
                             root = node;
                         }
 
-                        for (int i = rules.size() - 1; i >= 0; --i) {
-                            Symbol rule = rules.get(i);
+                        // Pushes the symbols of the right side of the rule to the stack
+                        for (int i = nextSymbols.size() - 1; i >= 0; --i) {
+                            Symbol rule = nextSymbols.get(i);
                             stack.push(new StackPair(new ASTNodeObject(rule), node));
                         }
 
@@ -112,32 +97,33 @@ public class Parser {
                     }
                 }
 
+                // If the current terminal is not the proper one, an exception is thrown
                 if (!ok) {
                     throw new ParsingException(tokenInfo.getString(), tokenInfo.getLineNumber(),
                             tokenInfo.getColumnNumber(), tokenList);
                 }
 
                 peek = stack.peek();
-//                System.out.println(stack.toString() + " - \"" + tokenInfo.getString() + "\"\n");
             }
 
             if (currentToken == peek.getObject().getSymbol()) {
+                // Adds the current terminal to the tree if applicable
                 if (ParserTokenMaps.ASTTokenList.contains(currentToken)) {
                     StackPair last = stack.peek();
                     last.getParent().add(new DefaultMutableTreeNode(new ASTNodeObject(currentToken)));
                 }
 
-                stack.pop(); // Removes matched terminal from the stack
+                stack.pop(); // Removes the matched terminal from the stack
             } else {
                 throw new ParsingException(tokenInfo.getString(), tokenInfo.getLineNumber(),
                         tokenInfo.getColumnNumber(), tokenList);
             }
         }
 
-        Postprocessor postprocessor = new Postprocessor();
+        // Apply postprocessing to the tree
+        ASTPostprocessor postprocessor = new ASTPostprocessor();
         postprocessor.run(root);
 
-        String output = getInputForTreeGenerator(root);
-        System.out.println(output);
+        return root;
     }
 }

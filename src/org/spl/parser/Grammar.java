@@ -1,5 +1,6 @@
 package org.spl.parser;
 
+import org.spl.common.Nonterminal;
 import org.spl.common.Symbol;
 import org.spl.common.Token;
 

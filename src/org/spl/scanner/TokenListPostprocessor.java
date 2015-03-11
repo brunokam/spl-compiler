@@ -7,7 +7,7 @@ import org.spl.common.Token;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class Postprocessor {
+public class TokenListPostprocessor {
 
     private final static HashMap<Pair<Token, Token>, TokenInfo> doubleTokens =
             new HashMap<Pair<Token, Token>, TokenInfo>();

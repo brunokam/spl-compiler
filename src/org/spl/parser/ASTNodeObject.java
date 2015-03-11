@@ -1,4 +1,4 @@
-package org.spl.scanner;
+package org.spl.parser;
 
 import org.spl.common.Symbol;
 

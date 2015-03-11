@@ -8,26 +8,46 @@ import org.spl.scanner.Scanner;
 import org.spl.scanner.exception.ScanningException;
 import org.spl.scanner.exception.TokenizationException;
 
+import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Enumeration;
 import java.util.LinkedList;
 
 public class Main {
 
+    private static String ASTToString(DefaultMutableTreeNode node) {
+        if (node.isLeaf()) {
+            return "[" + node.getUserObject().toString() + "] ";
+        } else {
+            String str = "[" + node.getUserObject().toString() + " ";
+
+            // Enumerates over children and go down the tree recursively
+            for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+                DefaultMutableTreeNode child = (DefaultMutableTreeNode) e.nextElement();
+                str += ASTToString(child);
+
+                if (e.hasMoreElements()) {
+                    str += " ";
+                }
+            }
+
+            return str + "]";
+        }
+    }
+
     public static void main(String[] args) {
-        // TODO: save result to data structure
         try {
             byte[] byteArray = Files.readAllBytes(Paths.get("tests/test_1.spl"));
             LinkedList<TokenInfo> tokenList = Scanner.scan(new String(byteArray));
 
-            // DEBUG PRINT
-//            for (TokenInfo token : tokenList) {
-//                System.out.println(token.getToken() + " " + token.getString() + " " + token.getLineNumber() + ":" + token.getColumnNumber());
-//            }
-
             Parser parser = new Parser();
-            parser.parse(tokenList);
+            DefaultMutableTreeNode AST = parser.parse(tokenList);
+
+            // Gets string representation of the tree
+            String output = ASTToString(AST);
+            System.out.println(output);
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (ScanningException e) {
