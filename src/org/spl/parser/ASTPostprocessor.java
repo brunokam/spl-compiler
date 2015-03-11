@@ -1,5 +1,8 @@
 package org.spl.parser;
 
+import org.spl.common.Nonterminal;
+import org.spl.common.Symbol;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,11 +12,32 @@ public class ASTPostprocessor {
 
     private final static String SYMBOL_NONTERMINAL = "NONTERMINAL";
 
-    private void traverse(DefaultMutableTreeNode node) {
-        Enumeration e = node.children();
-        while (e.hasMoreElements()) {
+    private void removeTempNonterminals(DefaultMutableTreeNode node) {
+        for (Enumeration e = node.children(); e.hasMoreElements();) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) e.nextElement();
-            traverse(child);
+            removeTempNonterminals(child);
+        }
+
+        Symbol nodeSymbol = ((ASTNodeObject) node.getUserObject()).getSymbol();
+        // If the node symbol is a temporary nonterminal
+        if (nodeSymbol.getType().equals(SYMBOL_NONTERMINAL) &&
+                ParserTokenMaps.ASTTempNonterminalList.contains((Nonterminal) nodeSymbol)) {
+            DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+
+            ArrayList children = Collections.list(node.children());
+            int i = parent.getIndex(node);
+            for (Object child : children) {
+                parent.insert((DefaultMutableTreeNode) child, i++);
+            }
+
+            parent.remove(node);
+        }
+    }
+
+    private void removeListPaths(DefaultMutableTreeNode node) {
+        for (Enumeration e = node.children(); e.hasMoreElements();) {
+            DefaultMutableTreeNode child = (DefaultMutableTreeNode) e.nextElement();
+            removeListPaths(child);
         }
 
         if (((ASTNodeObject) node.getUserObject()).getSymbol().getType().equals(SYMBOL_NONTERMINAL)) {
@@ -35,6 +59,7 @@ public class ASTPostprocessor {
     }
 
     public void run(DefaultMutableTreeNode root) {
-        traverse(root);
+        removeTempNonterminals(root);
+        removeListPaths(root);
     }
 }

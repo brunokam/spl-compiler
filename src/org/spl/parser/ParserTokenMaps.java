@@ -1,5 +1,7 @@
 package org.spl.parser;
 
+import org.spl.common.Nonterminal;
+import org.spl.common.Symbol;
 import org.spl.common.Token;
 
 import java.util.ArrayList;
@@ -7,6 +9,7 @@ import java.util.ArrayList;
 public class ParserTokenMaps {
 
     public final static ArrayList<Token> ASTTokenList = new ArrayList<Token>();
+    public final static ArrayList<Nonterminal> ASTTempNonterminalList = new ArrayList<Nonterminal>();
 
     static {
         // AST token list
@@ -43,5 +46,15 @@ public class ParserTokenMaps {
         ASTTokenList.add(Token.OPERATOR_ASSIGN);
         ASTTokenList.add(Token.OPERATOR_NEGATE);
         ASTTokenList.add(Token.OPERATOR_CONCATENATE);
+
+        // AST temporary nonterminal list
+        ASTTempNonterminalList.add(Nonterminal.MoreVarDecl);
+        ASTTempNonterminalList.add(Nonterminal.DeclRest);
+        ASTTempNonterminalList.add(Nonterminal.FuncRest);
+        ASTTempNonterminalList.add(Nonterminal.BasicType);
+        ASTTempNonterminalList.add(Nonterminal.MoreFArgs);
+        ASTTempNonterminalList.add(Nonterminal.MoreField);
+        ASTTempNonterminalList.add(Nonterminal.MoreActArgs);
+        ASTTempNonterminalList.add(Nonterminal.MoreStmt);
     }
 }

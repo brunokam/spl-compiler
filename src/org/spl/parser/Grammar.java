@@ -174,6 +174,13 @@ public class Grammar {
         firstSetMap.put(Nonterminal.VarDeclOrStmt, set);
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
+        set.addAll(firstSetMap.get(Nonterminal.Stmt));
+        firstSetMap.put(Nonterminal.FuncBody, set);
+
+        set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
+        firstSetMap.put(Nonterminal.FSingleArg, set);
+
+        set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
         set.add(null);
         firstSetMap.put(Nonterminal.FArgs, set);
 
@@ -263,12 +270,18 @@ public class Grammar {
         list.add(Nonterminal.FArgs);
         list.add(Token.BRA_ROUND_END);
         list.add(Token.BRA_CURLY_START);
-        list.add(Nonterminal.MoreVarDecl);
-        list.add(Nonterminal.Stmt);
-        list.add(Nonterminal.MoreStmt);
+        list.add(Nonterminal.FuncBody);
         list.add(Token.BRA_CURLY_END);
         rulesMap.put(Nonterminal.FuncRest, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.FuncRest).add(list);
+
+        // FuncBody
+        list = new ArrayList<Symbol>();
+        list.add(Nonterminal.MoreVarDecl);
+        list.add(Nonterminal.Stmt);
+        list.add(Nonterminal.MoreStmt);
+        rulesMap.put(Nonterminal.FuncBody, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.FuncBody).add(list);
 
         // MoreVarDecl
         list = new ArrayList<Symbol>();
@@ -369,8 +382,7 @@ public class Grammar {
 
         // FArgs
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Type);
-        list.add(Token.IDENTIFIER);
+        list.add(Nonterminal.FSingleArg);
         list.add(Nonterminal.MoreFArgs);
         rulesMap.put(Nonterminal.FArgs, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.FArgs).add(list);
@@ -378,6 +390,13 @@ public class Grammar {
         list = new ArrayList<Symbol>();
         list.add(null);
         rulesMap.get(Nonterminal.FArgs).add(list);
+
+        // FSingleArg
+        list = new ArrayList<Symbol>();
+        list.add(Nonterminal.Type);
+        list.add(Token.IDENTIFIER);
+        rulesMap.put(Nonterminal.FSingleArg, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.FSingleArg).add(list);
 
         // MoreFArgs
         list = new ArrayList<Symbol>();
