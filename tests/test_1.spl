@@ -1,11 +1,12 @@
 // Tests whether n is a prime number
 Bool isPrime(Int n) {
+    Int i = 2;
+    Bool result = True;
+
     if (n < 2) {
         return False;
     }
 
-    Int i = 2;
-    Bool result = True;
     while (i * i <= n) {
         if (n % i == 0) {
             return False;
@@ -20,11 +21,12 @@ Bool isPrime(Int n) {
 */
 Void main() {
     Int n = 23;
+    Char c = 'a';
+    Bool result = False;
 
-    Bool result = isPrime(n);
+    result = isPrime(n);
     print(result);
 
-    Char c = 'a';
     if (c > 5 && c != 'c') {
         print(True);
     } else {

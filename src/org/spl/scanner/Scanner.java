@@ -49,18 +49,20 @@ public class Scanner {
             m_tokenString = "";
         }
 
-        public void close(ScannerPreToken preToken) throws TokenizationException {
+        public void close(PreToken preToken) throws TokenizationException {
             Token finalToken;
+            int lineNumber = getLineNumber();
+            int columnNumber = getColumnNumber() - m_tokenString.length();
+
             if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
                 finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
             } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
                 finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(ScannerTokenMaps.CUSTOM_TOKEN);
             } else {
-                throw new TokenizationException(m_tokenString, getLineNumber(),
-                        getColumnNumber() - m_tokenString.length(), m_tokenList);
+                throw new TokenizationException(m_tokenString, lineNumber, columnNumber, m_tokenList);
             }
 
-            m_tokenList.add(new TokenInfo(finalToken, m_tokenString));
+            m_tokenList.add(new TokenInfo(finalToken, m_tokenString, lineNumber, columnNumber));
             m_tokenString = "";
         }
 
@@ -96,9 +98,9 @@ public class Scanner {
     public static LinkedList<TokenInfo> scan(String code)
             throws ScanningException, TokenizationException {
         ScannerIterator it = new ScannerIterator(code);
-        ScannerAutomaton automaton = new ScannerAutomaton();
+        Automaton automaton = new Automaton();
 
-        ScannerState lastState, state = ScannerState.START;
+        State lastState, state = State.START;
         while (it.hasNext()) {
             char c = it.next();
 
@@ -111,17 +113,17 @@ public class Scanner {
             }
 
             // If the transition starts and ends in different states and previous state is not the start one
-            if (lastState != ScannerState.START && (state != lastState ||
-                    (lastState == ScannerState.BRACKET && state == ScannerState.BRACKET))) { // Adjacent brackets hack
+            if (lastState != State.START && (state != lastState ||
+                    (lastState == State.BRACKET && state == State.BRACKET))) { // Adjacent brackets hack
                 // If the transition starts and ends in two accept states
-                if (ScannerAutomaton.acceptStateList.contains(lastState) &&
-                        ScannerAutomaton.acceptStateList.contains(state)) {
+                if (Automaton.acceptStateList.contains(lastState) &&
+                        Automaton.acceptStateList.contains(state)) {
                     it.close(ScannerTokenMaps.preTokenMap.get(lastState));
                 }
 
                 it.pass(c);
 
-                if (state == ScannerState.START) {
+                if (state == State.START) {
                     it.clear();
                 }
             } else {
@@ -129,7 +131,7 @@ public class Scanner {
             }
         }
 
-        ScannerPostprocessor postprocessor = new ScannerPostprocessor();
+        Postprocessor postprocessor = new Postprocessor();
         return postprocessor.run(it.getTokenList());
     }
 }

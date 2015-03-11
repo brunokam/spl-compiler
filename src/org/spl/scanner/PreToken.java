@@ -1,5 +1,5 @@
 package org.spl.scanner;
 
-public enum ScannerPreToken {
+public enum PreToken {
     IDENTIFIER, NUMERIC, CHARACTER, OPERATOR, BRACKET, PUNCTUATION, FIELD
 }
