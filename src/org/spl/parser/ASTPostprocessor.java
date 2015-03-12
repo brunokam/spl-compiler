@@ -1,6 +1,5 @@
 package org.spl.parser;
 
-import org.spl.common.Nonterminal;
 import org.spl.common.Symbol;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -21,7 +20,7 @@ public class ASTPostprocessor {
         Symbol nodeSymbol = ((ASTNodeObject) node.getUserObject()).getSymbol();
         // If the node symbol is a temporary nonterminal
         if (nodeSymbol.getType().equals(SYMBOL_NONTERMINAL) &&
-                ParserTokenMaps.ASTTempNonterminalList.contains((Nonterminal) nodeSymbol)) {
+                ParserTokenMaps.ASTTempNonterminalList.contains(nodeSymbol)) {
             DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
 
             ArrayList children = Collections.list(node.children());
@@ -40,12 +39,14 @@ public class ASTPostprocessor {
             removeListPaths(child);
         }
 
-        if (((ASTNodeObject) node.getUserObject()).getSymbol().getType().equals(SYMBOL_NONTERMINAL)) {
+        Symbol nodeSymbol = ((ASTNodeObject) node.getUserObject()).getSymbol();
+        if (nodeSymbol.getType().equals(SYMBOL_NONTERMINAL)) {
             // If node is a leaf and a nonterminal at the same time, it should be removed from the tree
             // Else if node is not a leaf and is the only child of its parent, it should be removed from the tree
             if (node.isLeaf()) {
                 node.removeFromParent();
-            } else if (node.getParent() != null && node.getParent().getChildCount() == 1) {
+            } else if (ParserTokenMaps.ASTPossibleNonterminalList.contains(nodeSymbol) &&
+                    node.getParent() != null && node.getParent().getChildCount() == 1) {
                 DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
 
                 ArrayList children = Collections.list(node.children());

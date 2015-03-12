@@ -401,8 +401,7 @@ public class Grammar {
         // MoreFArgs
         list = new ArrayList<Symbol>();
         list.add(Token.PUNC_COMA);
-        list.add(Nonterminal.Type);
-        list.add(Token.IDENTIFIER);
+        list.add(Nonterminal.FSingleArg);
         list.add(Nonterminal.MoreFArgs);
         rulesMap.put(Nonterminal.MoreFArgs, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.MoreFArgs).add(list);

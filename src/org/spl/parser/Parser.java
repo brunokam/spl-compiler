@@ -61,6 +61,7 @@ public class Parser {
         // Iterates over the set of tokens
         for (TokenInfo tokenInfo : tokenList) {
             Token currentToken = tokenInfo.getToken(); // Currently processed token
+            String currentString = tokenInfo.getString();
             StackPair peek = stack.peek();
 
             // Iterates until a token is on the peek
@@ -110,7 +111,7 @@ public class Parser {
                 // Adds the current terminal to the tree if applicable
                 if (ParserTokenMaps.ASTTokenList.contains(currentToken)) {
                     StackPair last = stack.peek();
-                    last.getParent().add(new DefaultMutableTreeNode(new ASTNodeObject(currentToken)));
+                    last.getParent().add(new DefaultMutableTreeNode(new ASTNodeObject(currentToken, currentString)));
                 }
 
                 stack.pop(); // Removes the matched terminal from the stack

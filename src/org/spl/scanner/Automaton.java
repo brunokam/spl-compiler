@@ -481,6 +481,7 @@ public class Automaton {
             state = null;
         }
 
+        // TODO: Handle unique characters
         m_currentState = state;
         return state;
     }

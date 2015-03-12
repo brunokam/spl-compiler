@@ -3,6 +3,7 @@ package org.spl.application;
 
 import org.spl.common.TokenInfo;
 import org.spl.parser.Parser;
+import org.spl.parser.PrettyPrinter;
 import org.spl.parser.exception.ParsingException;
 import org.spl.scanner.Scanner;
 import org.spl.scanner.exception.ScanningException;
@@ -48,6 +49,9 @@ public class Main {
             // Gets string representation of the tree
             String output = ASTToString(AST);
             System.out.println(output);
+
+            PrettyPrinter prettyPrinter = new PrettyPrinter();
+            System.out.println(prettyPrinter.run(AST));
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (ScanningException e) {
