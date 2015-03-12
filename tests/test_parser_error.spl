@@ -3,7 +3,7 @@ Bool isPrime(Int n) {
     Int i = 2;
     Bool result = True;
 
-    if (n < 2) {
+    if (n < 2) { // ERROR: '*' following '<' is not allowed
         return False;
     }
 
@@ -19,7 +19,7 @@ Bool isPrime(Int n) {
 /*
     Tests everything
 */
-Void main() {
+Void main( { // ERROR: invalid expression
     Int n = 23;
     Char c = 'a';
 
