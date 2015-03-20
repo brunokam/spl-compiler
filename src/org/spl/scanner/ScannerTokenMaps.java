@@ -93,7 +93,7 @@ public class ScannerTokenMaps {
         finalTokenMap.put(PreToken.BRACKET, map);
 
         map = new HashMap<String, Token>();
-        map.put(",", Token.PUNC_COMA);
+        map.put(",", Token.PUNC_COMMA);
         map.put(";", Token.PUNC_SEMICOLON);
         finalTokenMap.put(PreToken.PUNCTUATION, map);
 

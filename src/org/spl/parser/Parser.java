@@ -109,9 +109,11 @@ public class Parser {
 
             if (currentToken == peek.getObject().getSymbol()) {
                 // Adds the current terminal to the tree if applicable
-                if (ParserTokenMaps.ASTTokenList.contains(currentToken)) {
+                if (ParserMaps.ASTAllowedTokenList.contains(currentToken)) {
                     StackPair last = stack.peek();
-                    last.getParent().add(new DefaultMutableTreeNode(new ASTNodeObject(currentToken, currentString)));
+                    last.getParent().add(
+                            new DefaultMutableTreeNode(
+                                    new ASTNodeObject(currentToken, currentToken, currentString)));
                 }
 
                 stack.pop(); // Removes the matched terminal from the stack

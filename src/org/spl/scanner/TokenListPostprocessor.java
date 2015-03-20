@@ -27,7 +27,7 @@ public class TokenListPostprocessor {
                 new TokenInfo(Token.OPERATOR_GREATER_THAN_OR_EQUAL, ">="));
         doubleTokens.put(
                 new Pair<Token, Token>(Token.BRA_SQUARE_START, Token.BRA_SQUARE_END),
-                new TokenInfo(Token.BRA_SQUARE_BOTH, "[]"));
+                new TokenInfo(Token.EMPTY_ARRAY, "[]"));
     }
 
     public LinkedList<TokenInfo> run(LinkedList<TokenInfo> tokenList) {

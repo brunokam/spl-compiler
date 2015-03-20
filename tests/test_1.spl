@@ -1,17 +1,16 @@
 // Tests whether n is a prime number
-Bool isPrime(Int n) {
+Bool isPrime(Int n, Char c)
+{
     Int i = 2;
-    Bool result = True;
+Bool result = True;
 
-    if (n < 2) {
-        return False;
+if (n < 2) {
+    return False;
     }
-
     while (i * i <= n) {
-        if (n % i == 0) {
+if (n % i == 0) {
             return False;
-        }
-    }
+        }}
 
     return True;
 }
@@ -20,10 +19,15 @@ Bool isPrime(Int n) {
     Tests everything
 */
 Void main() {
-    Int n = 23;
+Int n = -23 + 4 * 5;
+    Bool x = False;
     Char c = 'a';
+    [Int] arr = [];
 
-    if (c > 5 && c != 'c' && isPrime(n + 2)) {
-        print(c);
+    if (!x && c > 5 && n < 20 && c != 'c' && isPrime(n + 2, c)) {
+    print(c); print(True); }
+    else {
+        print(n + 5 * 3); print(False);
     }
+    lol();
 }

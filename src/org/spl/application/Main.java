@@ -40,18 +40,21 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            byte[] byteArray = Files.readAllBytes(Paths.get("tests/test_1.spl"));
+            byte[] byteArray = Files.readAllBytes(Paths.get("tests/test_0.spl"));
+//            byte[] byteArray = Files.readAllBytes(Paths.get("tests/test_scanner_error.spl"));
+//            byte[] byteArray = Files.readAllBytes(Paths.get("tests/test_parser_error.spl"));
             LinkedList<TokenInfo> tokenList = Scanner.scan(new String(byteArray));
 
             Parser parser = new Parser();
             DefaultMutableTreeNode AST = parser.parse(tokenList);
 
-            // Gets string representation of the tree
+            // Prints string representation of the tree
             String output = ASTToString(AST);
+            System.out.println(output.length());
             System.out.println(output);
 
             PrettyPrinter prettyPrinter = new PrettyPrinter();
-            System.out.println(prettyPrinter.run(AST));
+//            System.out.println(prettyPrinter.run(AST));
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (ScanningException e) {

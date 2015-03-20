@@ -90,7 +90,7 @@ public class Grammar {
         set.add(Token.BOOL_TRUE);
         set.add(Token.BOOL_FALSE);
         set.add(Token.BRA_ROUND_START);
-        set.add(Token.BRA_SQUARE_BOTH);
+        set.add(Token.EMPTY_ARRAY);
         firstSetMap.put(Nonterminal.E5, set);
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.E5));
@@ -141,14 +141,14 @@ public class Grammar {
 
         set = new HashSet<Token>();
         set.add(Token.BRA_ROUND_START);
-        firstSetMap.put(Nonterminal.FunCallRest, set);
+        firstSetMap.put(Nonterminal.FuncCallRest, set);
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Exp));
         set.add(null);
-        firstSetMap.put(Nonterminal.ActArgs, set);
+        firstSetMap.put(Nonterminal.CallArgs, set);
 
         set = new HashSet<Token>();
-        set.add(Token.PUNC_COMA);
+        set.add(Token.PUNC_COMMA);
         set.add(null);
         firstSetMap.put(Nonterminal.MoreActArgs, set);
 
@@ -175,17 +175,17 @@ public class Grammar {
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
         set.addAll(firstSetMap.get(Nonterminal.Stmt));
-        firstSetMap.put(Nonterminal.FuncBody, set);
+        firstSetMap.put(Nonterminal.Body, set);
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
-        firstSetMap.put(Nonterminal.FSingleArg, set);
+        firstSetMap.put(Nonterminal.DeclSingleArg, set);
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
         set.add(null);
-        firstSetMap.put(Nonterminal.FArgs, set);
+        firstSetMap.put(Nonterminal.DeclArgs, set);
 
         set = new HashSet<Token>();
-        set.add(Token.PUNC_COMA);
+        set.add(Token.PUNC_COMMA);
         set.add(null);
         firstSetMap.put(Nonterminal.MoreFArgs, set);
 
@@ -207,13 +207,13 @@ public class Grammar {
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Type));
         set.add(Token.TYPE_VOID);
-        firstSetMap.put(Nonterminal.Decl, set);
+        firstSetMap.put(Nonterminal.FuncDecl, set);
 
-        set = new HashSet<Token>(firstSetMap.get(Nonterminal.Decl));
+        set = new HashSet<Token>(firstSetMap.get(Nonterminal.FuncDecl));
         set.add(null);
         firstSetMap.put(Nonterminal.MoreDecl, set);
 
-        set = new HashSet<Token>(firstSetMap.get(Nonterminal.Decl));
+        set = new HashSet<Token>(firstSetMap.get(Nonterminal.FuncDecl));
         firstSetMap.put(Nonterminal.SPL, set);
 
 
@@ -222,14 +222,14 @@ public class Grammar {
 
         // SPL
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Decl);
+        list.add(Nonterminal.FuncDecl);
         list.add(Nonterminal.MoreDecl);
         rulesMap.put(Nonterminal.SPL, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.SPL).add(list);
 
         // MoreDecl
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Decl);
+        list.add(Nonterminal.FuncDecl);
         list.add(Nonterminal.MoreDecl);
         rulesMap.put(Nonterminal.MoreDecl, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.MoreDecl).add(list);
@@ -238,19 +238,19 @@ public class Grammar {
         list.add(null);
         rulesMap.get(Nonterminal.MoreDecl).add(list);
 
-        // Decl
+        // FuncDecl
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.Type);
         list.add(Token.IDENTIFIER);
         list.add(Nonterminal.DeclRest);
-        rulesMap.put(Nonterminal.Decl, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.Decl).add(list);
+        rulesMap.put(Nonterminal.FuncDecl, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.FuncDecl).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(Token.TYPE_VOID);
         list.add(Token.IDENTIFIER);
         list.add(Nonterminal.FuncRest);
-        rulesMap.get(Nonterminal.Decl).add(list);
+        rulesMap.get(Nonterminal.FuncDecl).add(list);
 
         // DeclRest
         list = new ArrayList<Symbol>();
@@ -267,21 +267,21 @@ public class Grammar {
         // FuncRest
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
-        list.add(Nonterminal.FArgs);
+        list.add(Nonterminal.DeclArgs);
         list.add(Token.BRA_ROUND_END);
         list.add(Token.BRA_CURLY_START);
-        list.add(Nonterminal.FuncBody);
+        list.add(Nonterminal.Body);
         list.add(Token.BRA_CURLY_END);
         rulesMap.put(Nonterminal.FuncRest, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.FuncRest).add(list);
 
-        // FuncBody
+        // Body
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.MoreVarDecl);
         list.add(Nonterminal.Stmt);
         list.add(Nonterminal.MoreStmt);
-        rulesMap.put(Nonterminal.FuncBody, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.FuncBody).add(list);
+        rulesMap.put(Nonterminal.Body, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.Body).add(list);
 
         // MoreVarDecl
         list = new ArrayList<Symbol>();
@@ -331,7 +331,7 @@ public class Grammar {
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
         list.add(Nonterminal.Type);
-        list.add(Token.PUNC_COMA);
+        list.add(Token.PUNC_COMMA);
         list.add(Nonterminal.Type);
         list.add(Token.BRA_ROUND_END);
         rulesMap.get(Nonterminal.TypeWithoutId).add(list);
@@ -351,7 +351,7 @@ public class Grammar {
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
         list.add(Nonterminal.Type);
-        list.add(Token.PUNC_COMA);
+        list.add(Token.PUNC_COMMA);
         list.add(Nonterminal.Type);
         list.add(Token.BRA_ROUND_END);
         rulesMap.get(Nonterminal.Type).add(list);
@@ -380,28 +380,28 @@ public class Grammar {
         list.add(Token.TYPE_CHAR);
         rulesMap.get(Nonterminal.BasicType).add(list);
 
-        // FArgs
+        // DeclArgs
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FSingleArg);
+        list.add(Nonterminal.DeclSingleArg);
         list.add(Nonterminal.MoreFArgs);
-        rulesMap.put(Nonterminal.FArgs, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.FArgs).add(list);
+        rulesMap.put(Nonterminal.DeclArgs, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.DeclArgs).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.FArgs).add(list);
+        rulesMap.get(Nonterminal.DeclArgs).add(list);
 
-        // FSingleArg
+        // DeclSingleArg
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.Type);
         list.add(Token.IDENTIFIER);
-        rulesMap.put(Nonterminal.FSingleArg, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.FSingleArg).add(list);
+        rulesMap.put(Nonterminal.DeclSingleArg, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.DeclSingleArg).add(list);
 
         // MoreFArgs
         list = new ArrayList<Symbol>();
-        list.add(Token.PUNC_COMA);
-        list.add(Nonterminal.FSingleArg);
+        list.add(Token.PUNC_COMMA);
+        list.add(Nonterminal.DeclSingleArg);
         list.add(Nonterminal.MoreFArgs);
         rulesMap.put(Nonterminal.MoreFArgs, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.MoreFArgs).add(list);
@@ -481,7 +481,7 @@ public class Grammar {
         // RestOfStmt
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
-        list.add(Nonterminal.ActArgs);
+        list.add(Nonterminal.CallArgs);
         list.add(Token.BRA_ROUND_END);
         list.add(Token.PUNC_SEMICOLON);
         rulesMap.put(Nonterminal.RestOfStmt, new ArrayList<ArrayList<Symbol>>());
@@ -555,7 +555,7 @@ public class Grammar {
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
         list.add(Nonterminal.Exp);
-        list.add(Token.PUNC_COMA);
+        list.add(Token.PUNC_COMMA);
         list.add(Nonterminal.Exp);
         list.add(Token.BRA_ROUND_END);
         rulesMap.get(Nonterminal.E5).add(list);
@@ -567,7 +567,7 @@ public class Grammar {
         rulesMap.get(Nonterminal.E5).add(list);
 
         list = new ArrayList<Symbol>();
-        list.add(Token.BRA_SQUARE_BOTH);
+        list.add(Token.EMPTY_ARRAY);
         rulesMap.get(Nonterminal.E5).add(list);
 
         list = new ArrayList<Symbol>();
@@ -708,7 +708,7 @@ public class Grammar {
 
         // ExpFieldOrFunc
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FunCallRest);
+        list.add(Nonterminal.FuncCallRest);
         rulesMap.put(Nonterminal.ExpFieldOrFunc, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.ExpFieldOrFunc).add(list);
 
@@ -761,25 +761,25 @@ public class Grammar {
         // FuncCallRest
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
-        list.add(Nonterminal.ActArgs);
+        list.add(Nonterminal.CallArgs);
         list.add(Token.BRA_ROUND_END);
-        rulesMap.put(Nonterminal.FunCallRest, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.FunCallRest).add(list);
+        rulesMap.put(Nonterminal.FuncCallRest, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.FuncCallRest).add(list);
 
-        // ActArgs
+        // CallArgs
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.Exp);
         list.add(Nonterminal.MoreActArgs);
-        rulesMap.put(Nonterminal.ActArgs, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.ActArgs).add(list);
+        rulesMap.put(Nonterminal.CallArgs, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.CallArgs).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.ActArgs).add(list);
+        rulesMap.get(Nonterminal.CallArgs).add(list);
 
         // MoreActArgs
         list = new ArrayList<Symbol>();
-        list.add(Token.PUNC_COMA);
+        list.add(Token.PUNC_COMMA);
         list.add(Nonterminal.Exp);
         list.add(Nonterminal.MoreActArgs);
         rulesMap.put(Nonterminal.MoreActArgs, new ArrayList<ArrayList<Symbol>>());
