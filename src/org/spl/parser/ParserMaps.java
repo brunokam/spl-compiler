@@ -1,6 +1,6 @@
 package org.spl.parser;
 
-import com.sun.tools.javac.util.Pair;
+import javafx.util.Pair;
 import org.spl.common.Nonterminal;
 import org.spl.common.Symbol;
 import org.spl.common.Token;
@@ -17,18 +17,20 @@ public class ParserMaps {
     public final static ArrayList<Token> ASTLogOperatorTokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTCmpOperatorTokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTMatOperatorTokenList = new ArrayList<Token>();
+    public final static ArrayList<Token> ASTFieldTokenList = new ArrayList<Token>();
     public final static ArrayList<Symbol> ASTTempNonterminalList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTPossibleNonterminalList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTBodySymbolList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTExpSymbolList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTOperator2ContainerSymbolList = new ArrayList<Symbol>();
     public final static HashMap<Token, Token> ASTArrayTypeTokenMap = new HashMap<Token, Token>();
-    public final static HashMap<Symbol, Pair<ArrayList<Symbol>, Pair<String, String>>> ASTBracketMap = new HashMap<Symbol, Pair<ArrayList<Symbol>, Pair<String, String>>>();
-    public final static HashMap<Symbol, String> ASTComaMap = new HashMap<Symbol, String>();
-    public final static HashMap<Symbol, String> ASTSemicolonMap = new HashMap<Symbol, String>();
-    public final static HashMap<Symbol, ArrayList<Symbol>> ASTSpaceMap = new HashMap<Symbol, ArrayList<Symbol>>();
-    public final static HashMap<Pair<Symbol, Symbol>, String> ASTNewLineMap = new HashMap<Pair<Symbol, Symbol>, String>();
-    public final static HashMap<Symbol, ArrayList<Symbol>> ASTTabMap = new HashMap<Symbol, ArrayList<Symbol>>();
+
+    public final static HashMap<Symbol, String> ASTNewLineSymbolMap = new HashMap<Symbol, String>();
+    public final static HashMap<Symbol, Pair<String, String>> ASTBracketSymbolMap = new HashMap<Symbol, Pair<String, String>>();
+    public final static ArrayList<Symbol> ASTSpaceBeforeSymbolList = new ArrayList<Symbol>();
+    public final static ArrayList<Symbol> ASTSpaceAfterSymbolList = new ArrayList<Symbol>();
+    public final static ArrayList<Symbol> ASTCommaAfterSymbolList = new ArrayList<Symbol>();
+    public final static ArrayList<Symbol> ASTSemicolonAfterSymbolList = new ArrayList<Symbol>();
 
 //    public final static HashMap<Symbol, ArrayList<String>> beforeMap = new HashMap<Symbol, ArrayList<String>>();
 //    public final static HashMap<Symbol, ArrayList<String>> afterMap = new HashMap<Symbol, ArrayList<String>>();
@@ -175,169 +177,53 @@ public class ParserMaps {
         ASTArrayTypeTokenMap.put(Token.TYPE_BOOL, Token.ARRTYPE_BOOL);
         ASTArrayTypeTokenMap.put(Token.TYPE_CHAR, Token.ARRTYPE_CHAR);
 
-        // AST space map
-        ArrayList<Symbol> list;
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        list.add(Nonterminal.MoreDecl);
-        ASTSpaceMap.put(Token.TYPE_VOID, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.VarDecl);
-        list.add(Nonterminal.Stmt);
-        list.add(Nonterminal.E1);
-        list.add(Nonterminal.E2);
-        list.add(Nonterminal.E3);
-        list.add(Nonterminal.E4);
-        list.add(Nonterminal.E5);
-        ASTSpaceMap.put(Token.IDENTIFIER, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.VarDecl);
-        list.add(Nonterminal.E1);
-        list.add(Nonterminal.E2);
-        list.add(Nonterminal.E3);
-        list.add(Nonterminal.E4);
-        list.add(Nonterminal.E5);
-        ASTSpaceMap.put(Token.NUMERIC, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.VarDecl);
-        list.add(Nonterminal.E1);
-        list.add(Nonterminal.E2);
-        list.add(Nonterminal.E3);
-        list.add(Nonterminal.E4);
-        list.add(Nonterminal.E5);
-        ASTSpaceMap.put(Token.CHARACTER, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTSpaceMap.put(Token.CONDITIONAL_IF, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTSpaceMap.put(Token.CONDITIONAL_WHILE, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Else);
-        ASTSpaceMap.put(Token.CONDITIONAL_ELSE, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op21);
-        ASTSpaceMap.put(Token.OPERATOR_AND, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op21);
-        ASTSpaceMap.put(Token.OPERATOR_OR, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_EQUAL, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_NOT_EQUAL, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_LESS_THAN, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_GREATER_THAN, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_LESS_THAN_OR_EQUAL, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op22);
-        ASTSpaceMap.put(Token.OPERATOR_GREATER_THAN_OR_EQUAL, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op23);
-        ASTSpaceMap.put(Token.OPERATOR_MODULO, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op24);
-        ASTSpaceMap.put(Token.OPERATOR_ADD, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op24);
-        ASTSpaceMap.put(Token.OPERATOR_SUBTRACT, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op25);
-        ASTSpaceMap.put(Token.OPERATOR_MULTIPLY, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Op25);
-        ASTSpaceMap.put(Token.OPERATOR_DIVIDE, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.VarDecl);
-        list.add(Nonterminal.VarDeclOrStmt);
-        list.add(Nonterminal.RestOfStmt);
-        ASTSpaceMap.put(Token.OPERATOR_ASSIGN, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTSpaceMap.put(Token.RETURN, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        list.add(Nonterminal.DeclArgs);
-        list.add(Nonterminal.DeclSingleArg);
-        ASTSpaceMap.put(Nonterminal.Type, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.VarDecl);
-        ASTSpaceMap.put(Nonterminal.TypeWithoutId, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        list.add(Nonterminal.MoreDecl);
-        ASTSpaceMap.put(Nonterminal.DeclArgs, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.DeclArgs);
-        ASTSpaceMap.put(Nonterminal.DeclSingleArg, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTSpaceMap.put(Nonterminal.Exp, list);
+        // AST field token list
+        ASTFieldTokenList.add(Token.GET_FIRST);
+        ASTFieldTokenList.add(Token.GET_SECOND);
+        ASTFieldTokenList.add(Token.GET_HEAD);
+        ASTFieldTokenList.add(Token.GET_TAIL);
 
-        // AST new line map
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.FuncDecl, Nonterminal.SPL), "\n\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.FuncDecl, Nonterminal.MoreDecl), "\n\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.Body, Nonterminal.FuncDecl), "\n\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.VarDecl, Nonterminal.Body), "\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.Stmt, Nonterminal.Body), "\n\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.Stmt, Nonterminal.Stmt), "\n");
-        ASTNewLineMap.put(new Pair<Symbol, Symbol>(Nonterminal.Stmt, Nonterminal.Else), "\n");
-//        ASTNewLineMap.put(Nonterminal.RestOfStmt, "\n");
-//        ASTNewLineMap.put(Nonterminal.Ret, "\n");
 
-        // AST tab map
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Body);
-        ASTTabMap.put(Nonterminal.VarDecl, list);
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Body);
-        list.add(Nonterminal.Stmt);
-        list.add(Nonterminal.Else);
-        ASTTabMap.put(Nonterminal.Stmt, list);
 
-        // AST bracket map
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        ASTBracketMap.put(Nonterminal.DeclArgs, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("(", ")")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        ASTBracketMap.put(Nonterminal.Body, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("{\n", "}")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        list.add(Nonterminal.Else);
-        ASTBracketMap.put(Nonterminal.Stmt, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("{\n", "}")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTBracketMap.put(Nonterminal.CallArgs, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("(", ")")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Stmt);
-        ASTBracketMap.put(Nonterminal.Exp, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("(", ")")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.E1);
-        list.add(Nonterminal.E2);
-        list.add(Nonterminal.E3);
-        list.add(Nonterminal.E4);
-        list.add(Nonterminal.E5);
-        list.add(Nonterminal.Exp);
-        ASTBracketMap.put(Nonterminal.ExpFieldOrFunc, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("(", ")")));
-        list = new ArrayList<Symbol>();
-        list.add(Nonterminal.FuncDecl);
-        ASTBracketMap.put(Nonterminal.DeclArgs, new Pair<ArrayList<Symbol>, Pair<String, String>>(list, new Pair<String, String>("(", ")")));
+        // AST new line symbol map
+        ASTNewLineSymbolMap.put(Nonterminal.FuncDecl, "\n\n");
+        ASTNewLineSymbolMap.put(Nonterminal.VarDecl, "\n");
+        ASTNewLineSymbolMap.put(Nonterminal.FuncCall, "\n");
+        ASTNewLineSymbolMap.put(Nonterminal.Stmt, "\n");
+        ASTNewLineSymbolMap.put(Nonterminal.ConditionalStmt, "\n");
 
-        // AST coma map
-        ASTComaMap.put(Nonterminal.DeclSingleArg, ",");
+        // AST bracket symbol map
+        ASTBracketSymbolMap.put(Nonterminal.DeclArgs, new Pair<String, String>("(", ")"));
+        ASTBracketSymbolMap.put(Nonterminal.CallArgs, new Pair<String, String>("(", ")"));
+        ASTBracketSymbolMap.put(Nonterminal.ConditionalExp, new Pair<String, String>("(", ")"));
+        ASTBracketSymbolMap.put(Nonterminal.TupleType, new Pair<String, String>("(", ")"));
+        ASTBracketSymbolMap.put(Nonterminal.Body, new Pair<String, String>(" {\n", "}"));
 
-        // AST semicolon map
-        ASTSemicolonMap.put(Nonterminal.VarDecl, ";");
-        ASTSemicolonMap.put(Nonterminal.RestOfStmt, ";");
-        ASTSemicolonMap.put(Nonterminal.Ret, ";");
+        // AST space after symbol list
+        ASTSpaceBeforeSymbolList.add(Nonterminal.Op2);
+        ASTSpaceBeforeSymbolList.add(Nonterminal.ElseStmt);
+
+        // AST space after symbol list
+        ASTSpaceAfterSymbolList.add(Nonterminal.Type);
+        ASTSpaceAfterSymbolList.add(Nonterminal.ArrayType);
+        ASTSpaceAfterSymbolList.add(Nonterminal.TupleType);
+        ASTSpaceAfterSymbolList.add(Token.TYPE_VOID);
+        ASTSpaceAfterSymbolList.add(Nonterminal.DeclSingleArg);
+        ASTSpaceAfterSymbolList.add(Nonterminal.CallSingleArg);
+        ASTSpaceAfterSymbolList.add(Nonterminal.Op2);
+        ASTSpaceAfterSymbolList.add(Token.CONDITIONAL_IF);
+        ASTSpaceAfterSymbolList.add(Token.CONDITIONAL_WHILE);
+        ASTSpaceAfterSymbolList.add(Token.RETURN);
+
+        // AST comma after symbol list
+        ASTCommaAfterSymbolList.add(Nonterminal.DeclSingleArg);
+        ASTCommaAfterSymbolList.add(Nonterminal.CallSingleArg);
+
+        // AST semicolon after symbol list
+        ASTSemicolonAfterSymbolList.add(Nonterminal.VarDecl);
+        ASTSemicolonAfterSymbolList.add(Nonterminal.FuncCall);
+        ASTSemicolonAfterSymbolList.add(Nonterminal.Stmt);
+        ASTSemicolonAfterSymbolList.add(Nonterminal.ReturnStmt);
 
 
 //        ArrayList<String> list2 = new ArrayList<String>();

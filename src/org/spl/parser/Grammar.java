@@ -32,7 +32,7 @@ public class Grammar {
         set = new HashSet<Token>();
         set.add(Token.CONDITIONAL_ELSE);
         set.add(null);
-        firstSetMap.put(Nonterminal.Else, set);
+        firstSetMap.put(Nonterminal.ElseStmt, set);
 
         set = new HashSet<Token>();
         set.add(Token.OPERATOR_SUBTRACT);
@@ -110,7 +110,7 @@ public class Grammar {
 
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Exp));
         set.add(null);
-        firstSetMap.put(Nonterminal.Ret, set);
+        firstSetMap.put(Nonterminal.ReturnStmt, set);
 
         set = new HashSet<Token>();
         set.add(Token.FIELD);
@@ -435,7 +435,7 @@ public class Grammar {
         list.add(Nonterminal.Exp);
         list.add(Token.BRA_ROUND_END);
         list.add(Nonterminal.Stmt);
-        list.add(Nonterminal.Else);
+        list.add(Nonterminal.ElseStmt);
         rulesMap.get(Nonterminal.Stmt).add(list);
 
         list = new ArrayList<Symbol>();
@@ -448,7 +448,7 @@ public class Grammar {
 
         list = new ArrayList<Symbol>();
         list.add(Token.RETURN);
-        list.add(Nonterminal.Ret);
+        list.add(Nonterminal.ReturnStmt);
         list.add(Token.PUNC_SEMICOLON);
         rulesMap.get(Nonterminal.Stmt).add(list);
 
@@ -457,26 +457,26 @@ public class Grammar {
         list.add(Nonterminal.RestOfStmt);
         rulesMap.get(Nonterminal.Stmt).add(list);
 
-        // Else
+        // ElseStmt
         list = new ArrayList<Symbol>();
         list.add(Token.CONDITIONAL_ELSE);
         list.add(Nonterminal.Stmt);
-        rulesMap.put(Nonterminal.Else, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.Else).add(list);
+        rulesMap.put(Nonterminal.ElseStmt, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.ElseStmt).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.Else).add(list);
+        rulesMap.get(Nonterminal.ElseStmt).add(list);
 
-        // Ret
+        // ReturnStmt
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.Exp);
-        rulesMap.put(Nonterminal.Ret, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.Ret).add(list);
+        rulesMap.put(Nonterminal.ReturnStmt, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.ReturnStmt).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.Ret).add(list);
+        rulesMap.get(Nonterminal.ReturnStmt).add(list);
 
         // RestOfStmt
         list = new ArrayList<Symbol>();

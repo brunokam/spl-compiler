@@ -45,7 +45,7 @@ public class ASTPostprocessor {
         Symbol nodeSymbol = ((ASTNodeObject) node.getUserObject()).getSymbol();
         if (nodeSymbol.getType().equals(SYMBOL_NONTERMINAL)) {
             // If node is a leaf and a nonterminal at the same time, it should be removed from the tree
-            // Else if node is not a leaf and is the only child of its parent, it should be removed from the tree
+            // ElseStmt if node is not a leaf and is the only child of its parent, it should be removed from the tree
             if (node.isLeaf()) {
                 node.removeFromParent();
             } else if (ParserMaps.ASTPossibleNonterminalList.contains(nodeSymbol) &&
@@ -74,11 +74,12 @@ public class ASTPostprocessor {
             // Collapse conditionals and types
             if (nodeSymbol.getType().equals(SYMBOL_TOKEN) && ParserMaps.ASTCollapsingTokenList.contains(nodeSymbol)) {
                 parentObject.setToken((Token) nodeSymbol);
+                parentObject.setString(nodeObject.getString());
                 parent.remove(node);
                 return;
             }
 
-            // Change statement nonterminals to body nonterminals in conditionals
+            // Change statement nonterminals to Body nonterminals in conditionals
             Token parentToken = parentObject.getToken();
             if (nodeSymbol == Nonterminal.Stmt && ParserMaps.ASTBodySymbolList.contains(parentToken)) {
                 nodeObject.setSymbol(Nonterminal.Body);
@@ -217,10 +218,10 @@ public class ASTPostprocessor {
             singleArg.add(node);
         }
 
-        // Changes all Op1 and Op2 to Exp
-//        if (nodeSymbol == Nonterminal.Op1 || nodeSymbol == Nonterminal.Op2) {
-//            nodeObject.setSymbol(Nonterminal.Exp);
-//        }
+        // Changes all assignment operators to Op2
+        if (nodeSymbol == Token.OPERATOR_ASSIGN) {
+            nodeObject.setSymbol(Nonterminal.Op2);
+        }
 
         // Moves alone tokens to Exp
         if (node.isLeaf() && parentSymbol == Nonterminal.Exp && parent.getChildCount() == 1) {
@@ -238,11 +239,11 @@ public class ASTPostprocessor {
         if (parent != null) {
             Token nodeToken = nodeObject.getToken();
 
-            // 1. Simplifies Ret
+            // 1. Simplifies ReturnStmt
             // 2. Simplifies polymorphic array Type
             // 3. Simplifies basic array Type
-            if (nodeSymbol == Nonterminal.Ret) {
-                parentObject.setSymbol(Nonterminal.Ret);
+            if (nodeSymbol == Nonterminal.ReturnStmt && parentSymbol == Nonterminal.Stmt) {
+                parentObject.setSymbol(Nonterminal.ReturnStmt);
 
                 for (Object child : children) {
                     int i = node.getIndex((DefaultMutableTreeNode) child);
@@ -291,10 +292,67 @@ public class ASTPostprocessor {
         }
     }
 
+    private void process3(DefaultMutableTreeNode node) {
+        ASTNodeObject nodeObject = (ASTNodeObject) node.getUserObject();
+        Symbol nodeSymbol = nodeObject.getSymbol();
+        Token nodeToken = nodeObject.getToken();
+
+        // Iterates over children
+        ArrayList children = Collections.list(node.children());
+        for (Object child : children) {
+            process3((DefaultMutableTreeNode) child);
+        }
+
+        if (ParserMaps.ASTOperator1TokenList.contains(nodeToken) ||
+                ParserMaps.ASTOperator2TokenList.contains(nodeToken)) {
+            if (ParserMaps.ASTOperator2TokenList.contains(nodeToken) && node.getChildCount() == 2) {
+                node.insert(new DefaultMutableTreeNode(
+                        new ASTNodeObject(nodeSymbol, nodeToken, nodeObject.getString())), 1);
+            } else {
+                node.insert(new DefaultMutableTreeNode(
+                        new ASTNodeObject(nodeSymbol, nodeToken, nodeObject.getString())), 0);
+            }
+
+            nodeObject.setSymbol(Nonterminal.Exp);
+            nodeObject.setToken(null);
+            nodeObject.setString(null);
+
+            nodeSymbol = Nonterminal.Exp;
+        } else if (nodeToken == Token.CONDITIONAL_IF || nodeToken == Token.CONDITIONAL_WHILE) {
+            node.insert(new DefaultMutableTreeNode(
+                    new ASTNodeObject(nodeToken, nodeToken, nodeObject.getString())), 0);
+            nodeObject.setSymbol(Nonterminal.ConditionalStmt);
+            nodeObject.setToken(null);
+            nodeObject.setString(null);
+
+            nodeSymbol = Nonterminal.ConditionalStmt;
+        } else if (nodeToken == Token.CONDITIONAL_ELSE) {
+            node.insert(new DefaultMutableTreeNode(
+                    new ASTNodeObject(nodeToken, nodeToken, nodeObject.getString())), 0);
+            nodeObject.setToken(null);
+            nodeObject.setString(null);
+        } else if (nodeToken == Token.RETURN) {
+            node.insert(new DefaultMutableTreeNode(
+                    new ASTNodeObject(nodeToken, nodeToken, nodeObject.getString())), 0);
+            nodeObject.setToken(null);
+            nodeObject.setString(null);
+        }
+
+        DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+        ASTNodeObject parentObject = parent != null ? (ASTNodeObject) parent.getUserObject() : null;
+        Token parentToken = parent != null ? parentObject.getToken() : null;
+
+        if (nodeSymbol == Nonterminal.Exp &&
+                (parentToken == Token.CONDITIONAL_IF || parentToken == Token.CONDITIONAL_WHILE)) {
+            nodeObject.setSymbol(Nonterminal.ConditionalExp);
+        }
+    }
+
     public void run(DefaultMutableTreeNode root) {
         removeTempNonterminals(root);
         removeListPaths(root);
         process(root);
         process2(root);
+        process3(root);
     }
 }

@@ -73,7 +73,7 @@ public class Parser {
                     Symbol firstSymbol = nextSymbols.get(0);
 
                     // If the current nonterminal can advance to an epsilon
-                    // Else if the current token or epsilon are included in the current nonterminal's FIRST set
+                    // ElseStmt if the current token or epsilon are included in the current nonterminal's FIRST set
                     if (firstSymbol == null) {
                         ok = true;
                         break;

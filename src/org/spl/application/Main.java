@@ -54,7 +54,7 @@ public class Main {
             System.out.println(output);
 
             PrettyPrinter prettyPrinter = new PrettyPrinter();
-//            System.out.println(prettyPrinter.run(AST));
+            System.out.println(prettyPrinter.run(AST));
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (ScanningException e) {
