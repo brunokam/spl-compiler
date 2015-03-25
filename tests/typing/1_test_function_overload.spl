@@ -1,0 +1,19 @@
+/*
+    Purpose: check how function overload works
+    Result: test should fail because of definition of another definition of same function
+*/
+
+// Given: function add
+Int add(Int a, Int b) {
+    return a + b;
+}
+
+// Correct: function overload
+Char add(Char a, Char b) {
+    return a + b;
+}
+
+// Error: you cannot define another same function
+Char add(Char a, Char b) {
+    return a + b;
+}

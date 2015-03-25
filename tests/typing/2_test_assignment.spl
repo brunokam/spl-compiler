@@ -1,0 +1,35 @@
+/*
+    Purpose: test type checking during assignment process
+    Result: test should fail because of assignment with wrong types
+*/
+
+Void main () {
+
+    // Given: integers
+    Int int_1 = 1;
+    Int int_2 = 2;
+
+    // Given: characters
+    Char char_a = 'a';
+    Char char_b = 'b';
+
+    // Given: booleans
+    Bool bool_t = True;
+    Bool bool_f = False;
+
+    // Correct: integer assign to integer variable
+    int_1 = int_2;
+
+    // Correct: character assign to character variable
+    char_a = char_b;
+
+    // Correct: boolean assign to boolean variable
+    bool_t = bool_f;
+
+    // Error: character assign to integer variable
+    int_2 = char_b;
+
+    // Error: boolean assign to character variable
+    char_a = bool_f;
+
+}

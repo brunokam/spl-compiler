@@ -1,0 +1,42 @@
+/*
+    Purpose: test type checking when using operators
+    Result: test should fail because of using operator or function with wrong types
+*/
+
+Void main () {
+
+    // Given: integers
+    Int int_1 = 1;
+    Int int_2 = 2;
+
+    // Given: characters
+    Char char_a = 'a';
+    Char char_b = 'b';
+
+    // Given: booleans
+    Bool bool_t = True;
+    Bool bool_f = False;
+
+    // Correct: list definition
+    [Int] list_int = 1 : 2 : 3 : [];
+    [Char] list_int = 'a' : 'a' : 'c' : [];
+
+    // Correct: compare two integers
+    bool_t = int_1 <= int_2;
+
+    // Correct: append two characters
+    char_a = char_a + char_b;
+
+    // Correct: compare two booleans
+    bool_t = bool_t != bool_f;
+
+    // Error: operator 'not' used with character
+    char_a = !char_b;
+
+    // Error: operator 'modulo' used with boolean
+    int_1 = bool_t % int_2;
+
+    // Error: function append used with lists of different types
+    list_int.tl = append ( list_int.tl, list_char );
+
+}

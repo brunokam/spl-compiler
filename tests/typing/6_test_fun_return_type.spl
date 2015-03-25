@@ -1,0 +1,14 @@
+/*
+    Purpose: test type checking in return statements
+    Result: test should fail because of wrong type in return statement
+*/
+
+// Correct: an integer is returned
+Int add (Int a, Int b) {
+    return a + b;
+}
+
+// Error: an integer is returned
+Char add (Char a, Char b) {
+    return 5;
+}

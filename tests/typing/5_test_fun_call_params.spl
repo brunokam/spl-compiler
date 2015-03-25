@@ -1,0 +1,31 @@
+/*
+    Purpose: test number of parameters checking during function call
+    Result: test should fail because of wrong number of function call parameters
+*/
+
+// Given: function append
+[Int] append ( [Int] l1, [Int] l2 ) {
+    if ( isEmpty ( l1 ))
+        return l2;
+    else {
+        l1.tl = append ( l1.tl, l2 );
+        return l1;
+    }
+}
+
+Void main () {
+
+    // Given: some lists of integers and one character
+    Int int_list_1 = 1 : 2 : [];
+    Int int_list_3 = 3 : 4 : [];
+
+    // Correct: function called with correct number of parameters
+    print ( append(int_list_1, int_list_3) );
+
+    // Error: function called with just one parameter
+    print ( append(int_list_1) );
+
+    // Error: function called with too many parameters
+    print ( append(int_list_1, int_list_3, int_list_3) );
+
+}

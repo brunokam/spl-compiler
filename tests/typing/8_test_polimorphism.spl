@@ -1,0 +1,27 @@
+/*
+    Purpose: test type checking for polymorphic functions
+    Result: test should fail because of polymorphic function call with wrong parameters
+*/
+
+// Given: polymorphic function
+t max (t a, t b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+
+Void main () {
+
+    // Given: some variables
+    Int int_1 = 1;
+    Int int_2 = 2;
+    Char char_a = a;
+
+    // Correct: types are the same
+    print ( max(int_1, int_2) );
+
+    // Error: types doesn't match each other
+    print ( max(int_1, char_a) );
+
+}

@@ -1,0 +1,34 @@
+/*
+    Purpose: test if function always returns a value
+    Result: test should fail because return isn't present in all function's paths
+*/
+
+// Correct: value is always returned
+Int max (Int a, Int b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+
+// Correct: nothing returned
+Void empty_function() {
+}
+
+// Error: not always a value is returned
+Char add (Char a, Char b) {
+    if (a > b) {
+        Bool false = False;
+        if (false)
+            return a;
+    }
+    else {
+        return b;
+    }
+
+}
+
+// Error: value returned in a void function
+Void empty_error_function() {
+    return 'a';
+}

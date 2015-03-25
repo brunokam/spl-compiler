@@ -1,0 +1,21 @@
+/*
+    Purpose: check how variable typing works, especially variable hiding
+    Result: test should fail because of definition of another variable with the same name
+            or using undefined variable
+*/
+
+// Given: global variable
+Int variable = 10;
+
+// Correct: global variable is hidden behind the function parameter
+Int id(Int variable) {
+
+    // Correct: function parameter is hidden behind the local variable
+    Int variable = variable;
+
+    // Error: you cannot define another variable with the same name
+    Int variable = 4;
+
+    // Error: using undefined variable nothing_here
+    variable = nothing_here;
+}

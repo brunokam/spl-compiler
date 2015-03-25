@@ -1,0 +1,27 @@
+/*
+    Purpose: test tricky code with polymorphism
+    Result: test should fail at lines with 'Error' marking
+*/
+
+// Given: polymorphic function
+Int max (Int a, t b) {
+
+    // Correct: we don't know what the types are yet
+    if (a > b)
+
+        // Correct: we don't know what the types are yet
+        return a;
+
+    else
+
+        // Correct: we don't know what the types are yet
+        return b;
+}
+
+// Error: it's not deterministic when calling max(5, 6)
+Int max (t a, Int b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}

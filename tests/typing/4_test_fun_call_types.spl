@@ -1,0 +1,29 @@
+/*
+    Purpose: test type checking during function call
+    Result: test should fail because of wrong function call parameters
+*/
+
+// Given: function append
+[Int] append ( [Int] l1, [Int] l2 ) {
+    if ( isEmpty ( l1 ))
+        return l2;
+    else {
+        l1.tl = append ( l1.tl, l2 );
+        return l1;
+    }
+}
+
+Void main () {
+
+    // Given: some lists of integers and one character
+    Int int_list_1 = 1 : 2 : [];
+    Int int_list_3 = 3 : 4 : [];
+    Char char_a = 'a';
+
+    // Correct: function called with correct types of parameters
+    print ( append(int_list_1, int_list_3) );
+
+    // Error: second parameter is wrong type
+    print ( append(int_list_1, char_a) );
+
+}
