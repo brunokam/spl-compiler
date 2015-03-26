@@ -8,10 +8,13 @@
 Int variable = 10;
 
 // Correct: global variable is hidden behind the function parameter
-Int id(Int variable) {
+Int id(Char variable) {
 
     // Correct: function parameter is hidden behind the local variable
-    Int variable = variable;
+    Bool variable = True;
+
+    // Error: wrong type to boolean variable
+    variable = 4;
 
     // Error: you cannot define another variable with the same name
     Int variable = 4;
