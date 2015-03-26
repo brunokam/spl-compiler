@@ -39,4 +39,7 @@ Void main () {
     // Error: function append used with lists of different types
     list_int.tl = append ( list_int.tl, list_char );
 
+    // Error: character added to list of integers
+    [Int] list_int = 1 : 2 : 'f' : [];
+
 }
