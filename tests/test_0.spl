@@ -101,5 +101,5 @@ Int abs (Int n) { if (n < 0) return -n; else return n; }
             list.hd = list.hd * list.hd;
             list.tl = squareOddNumbers( list.tl );
         }
-    return list ;
+    return reverse(list) ;
 }

@@ -4,7 +4,7 @@
 */
 
 // Given: polymorphic function
-t max (t a, t b) {
+T max (T a, T b) {
     if (a > b)
         return a;
     else
@@ -16,7 +16,7 @@ Void main () {
     // Given: some variables
     Int int_1 = 1;
     Int int_2 = 2;
-    Char char_a = a;
+    Char char_a = 'r';
 
     // Correct: types are the same
     print ( max(int_1, int_2) );

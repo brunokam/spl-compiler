@@ -50,10 +50,10 @@ public class ScannerTokenMaps {
         map.put("else", Token.CONDITIONAL_ELSE);
         map.put("while", Token.CONDITIONAL_WHILE);
         map.put("return", Token.RETURN);
-        map.put("hd", Token.GET_HEAD);
-        map.put("tl", Token.GET_TAIL);
-        map.put("fst", Token.GET_FIRST);
-        map.put("snd", Token.GET_SECOND);
+        map.put("hd", Token.GETTER_HEAD);
+        map.put("tl", Token.GETTER_TAIL);
+        map.put("fst", Token.GETTER_FIRST);
+        map.put("snd", Token.GETTER_SECOND);
         finalTokenMap.put(PreToken.IDENTIFIER, map);
 
         map = new HashMap<String, Token>();

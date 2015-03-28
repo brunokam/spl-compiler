@@ -33,6 +33,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.START, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -57,6 +58,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.IDENTIFIER, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -78,6 +80,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.NUMERIC, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -94,6 +97,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.CHARACTER, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -117,6 +121,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.BRACKET, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -131,6 +136,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.PUNCTUATION, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -143,6 +149,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.OPERATOR, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -156,6 +163,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.ASSIGNMENT, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -168,6 +176,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.LESS_THAN, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -180,6 +189,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.GREATER_THAN, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -192,6 +202,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.EXCLAMATION_MARK, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -201,6 +212,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.MINUS, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -213,6 +225,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.EQUAL, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -225,6 +238,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.LESS_THAN_OR_EQUAL, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -237,6 +251,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.GREATER_THAN_OR_EQUAL, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -249,6 +264,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.NOT_EQUAL, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -261,6 +277,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.AND, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -273,6 +290,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.OR, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -284,6 +302,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.START);
         map.put(SingleCharacter.SPACE, State.START);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.SLASH, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -347,6 +366,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.MULTI_LINE_COMMENT);
         map.put(SingleCharacter.TAB, State.MULTI_LINE_COMMENT);
         map.put(SingleCharacter.SPACE, State.MULTI_LINE_COMMENT);
+        map.put(SingleCharacter.R, State.R_MLC);
         transitionMap.put(State.STAR, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -372,6 +392,7 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.START);
         map.put(SingleCharacter.TAB, State.ONE_LINE_COMMENT);
         map.put(SingleCharacter.SPACE, State.ONE_LINE_COMMENT);
+        map.put(SingleCharacter.R, State.R);
         transitionMap.put(State.ONE_LINE_COMMENT, map);
 
         map = new HashMap<SingleCharacter, State>();
@@ -397,7 +418,16 @@ public class Automaton {
         map.put(SingleCharacter.NEW_LINE, State.MULTI_LINE_COMMENT);
         map.put(SingleCharacter.TAB, State.MULTI_LINE_COMMENT);
         map.put(SingleCharacter.SPACE, State.MULTI_LINE_COMMENT);
+        map.put(SingleCharacter.R, State.R_MLC);
         transitionMap.put(State.MULTI_LINE_COMMENT, map);
+
+        map = new HashMap<SingleCharacter, State>();
+        map.put(SingleCharacter.NEW_LINE, State.START);
+        transitionMap.put(State.R, map);
+
+        map = new HashMap<SingleCharacter, State>();
+        map.put(SingleCharacter.NEW_LINE, State.MULTI_LINE_COMMENT);
+        transitionMap.put(State.R_MLC, map);
 
         // Accept state list
         acceptStateList.add(State.START);
@@ -477,6 +507,8 @@ public class Automaton {
             state = Automaton.transitionMap.get(m_currentState).get(SingleCharacter.TAB);
         } else if (c == ' ') {
             state = Automaton.transitionMap.get(m_currentState).get(SingleCharacter.SPACE);
+        } else if (c == '\r') {
+            state = Automaton.transitionMap.get(m_currentState).get(SingleCharacter.R);
         } else {
             state = null;
         }

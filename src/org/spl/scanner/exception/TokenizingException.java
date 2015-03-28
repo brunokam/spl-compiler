@@ -4,15 +4,15 @@ import org.spl.common.TokenInfo;
 
 import java.util.LinkedList;
 
-public class TokenizationException extends Exception {
+public class TokenizingException extends Exception {
 
     private String m_tokenString;
     private int m_lineNumber;
     private int m_columnNumber;
     private LinkedList<TokenInfo> m_tokenList;
 
-    public TokenizationException(String tokenString, int lineNumber, int columnNumber,
-                                 LinkedList<TokenInfo> tokenList) {
+    public TokenizingException(String tokenString, int lineNumber, int columnNumber,
+                               LinkedList<TokenInfo> tokenList) {
         super("Error: failed to assign a proper token to string \"" + tokenString + "\" at line " + lineNumber +
                 ", column " + columnNumber);
         m_tokenString = tokenString;

@@ -9,6 +9,11 @@ Int add (Int a, Int b) {
 }
 
 // Error: an integer is returned
-Char add (Char a, Char b) {
+Char add_c (Char a, Char b) {
     return 5;
+}
+
+// Error: value returned in a void function
+Void empty_error_function() {
+    return 'a';
 }

@@ -1,6 +1,6 @@
 package org.spl.scanner;
 
-import com.sun.tools.javac.util.Pair;
+import javafx.util.Pair;
 import org.spl.common.TokenInfo;
 import org.spl.common.Token;
 

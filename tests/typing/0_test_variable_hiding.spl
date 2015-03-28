@@ -8,17 +8,22 @@
 Int variable = 10;
 
 // Correct: global variable is hidden behind the function parameter
-Int id(Char variable) {
+Void id(Char variable) {
 
     // Correct: function parameter is hidden behind the local variable
     Bool variable = True;
-
-    // Error: wrong type to boolean variable
-    variable = 4;
 
     // Error: you cannot define another variable with the same name
     Int variable = 4;
 
     // Error: using undefined variable nothing_here
     variable = nothing_here;
+
+    // Error: wrong type to boolean variable
+    variable = 'c';
+
+    // Correct: using a global variable defined in the bottom
+    globalVar = True;
 }
+
+Bool globalVar = False;

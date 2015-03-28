@@ -1,0 +1,63 @@
+// TYPED PRETTY PRINTER CODE
+Int |a -> Int| = 5;
+Bool isPrime(Int |n -> null|, Char |c -> Int|) {
+    Int i = 2;
+    Bool result = True;
+
+    if (|a -> Int| < 2) {
+        return False;
+    }
+
+    while (|i -> Int| * |i -> Int| <= |n -> Int|) {
+        if (|n -> Int| % |i -> Int| == 0) {
+            return False;
+        }
+    }
+    return True;
+}
+
+Int |c -> Int| = 45;
+(Int, ([[Char]], Char)) tupleTest() {
+    (Int, ([[Char]], Char)) tp = (5, ([], 'c'));
+    Int t2 = 5 + 4;
+    return |tp -> (Int, ([[Char]], Char))|;
+}
+
+(|b -> null|, |a -> Int|) swapCopy((|a -> Int|, |b -> null|) |pair -> null|) {
+    return (|pair -> (a, b)|.snd, |pair -> (a, b)|.fst);
+}
+
+(|a -> Int|, |a -> Int|) swap((|a -> Int|, |a -> Int|) |tuple -> null|) {
+    a tmp = |tuple -> (a, a)|.fst;
+    |tuple -> (a, a)|.fst = |tuple -> (a, a)|.snd;
+    |tuple -> (a, a)|.snd = |tmp -> a|;
+    return |tuple -> (a, a)|;
+}
+
+t polymorphicFunc([|t -> null|] |a -> Int|, [|u -> null|] |b -> null|) {
+    |a -> [t]| = 'c' : |a -> [t]|;
+    return |a -> [t]|.tl.tl.tl.hd;
+}
+
+Void main() {
+    Int n = -23 + 4 * 5;
+    Bool x = False;
+    Char c = 'a';
+    [Int] arr1 = 1 : 2 : [];
+    [[Int]] arr2 = |arr1 -> [Int]| : |arr1 -> [Int]| : [];
+    [Char] arr3 = 'a' : 'b' : 'c' : [];
+    (Int, Char) tpl1 = (5, 'a');
+    (Char, Char) tpl2 = ('a', 'b');
+    (Char, Char) tpl2Swapped = |swap -> (a, a)|(|tpl2 -> (Char, Char)|);
+    (Char, Int) tpl1Swapped = |swapCopy -> (b, a)|(|tpl1 -> (Int, Char)|);
+
+    if (!|x -> Bool| && |c -> Char| > 'a' && |n -> Int| < 20 && |isPrime -> Bool|(|n -> Int| + 2, |c -> Char|)) {
+        |print -> Void|(|c -> Char|);
+        |print -> Void|(True);
+    } else {
+        |arr1 -> [Int]| = |arr2 -> [[Int]]|.tl.tl.hd;
+        |print -> Void|(|n -> Int| + 5 * 3);
+        |print -> Void|(False);
+    }
+    |c -> Char| = |polymorphicFunc -> t|(|arr3 -> [Char]|, |arr1 -> [Int]|);
+}

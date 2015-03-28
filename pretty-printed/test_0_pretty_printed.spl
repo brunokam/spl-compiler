@@ -1,0 +1,105 @@
+// TYPED PRETTY PRINTER CODE
+Int facR(Int |n -> null|) {
+    if (|n -> Int| < 2) {
+        return 1;
+    } else {
+        return |n -> Int| * |facR -> Int|(|n -> Int| - 1);
+    }
+}
+
+Int facI(Int |n -> null|) {
+    Int r = 1;
+
+    while (|n -> Int| > 1) {
+        |r -> Int| = |r -> Int| * |n -> Int|;
+        |n -> Int| = |n -> Int| - 1;
+    }
+    return |r -> Int|;
+}
+
+Void main() {
+    Int n = 0;
+    Int facN = 1;
+    Bool ok = True;
+
+    while (|n -> Int| < 20) {
+        |facN -> Int| = |facR -> Int|(|n -> Int|);
+
+        if (|facN -> Int| != |facI -> Int|(|n -> Int|) || |facN -> Int| != |facL -> Int|(|n -> Int|)) {
+            |print -> Void|(|n -> Int| : |facN -> Int| : |facI -> Int|(|n -> Int|) : |facL -> Int|(|n -> Int|) : []);
+            |ok -> Bool| = False;
+        }
+        |n -> Int| = |n -> Int| + 1;
+    }
+    |print -> Void|(|ok -> Bool|);
+}
+
+Int facL(Int |n -> null|) {
+    return |product -> Int|(|fromTo -> [Int]|(1, |n -> Int|));
+}
+
+Int product([Int] |list -> null|) {
+    if |isEmpty -> Bool|(|list -> [Int]|) {
+        return 1;
+    } else {
+        return |list -> [Int]|.hd * |product -> Int|(|list -> [Int]|.tl);
+    }
+}
+
+[Int] fromTo(Int |from -> null|, Int |to -> null|) {
+    if (|from -> Int| <= |to -> Int|) {
+        return |from -> Int| : |fromTo -> [Int]|(|from -> Int| + 1, |to -> Int|);
+    } else {
+        return [];
+    }
+}
+
+[|t -> null|] reverse([|t -> null|] |list -> null|) {
+    [|t -> null|] accu = [];
+
+    while (!|isEmpty -> Bool|(|list -> [t]|)) {
+        |accu -> [t]| = |list -> [t]|.hd : |accu -> [t]|;
+        |list -> [t]| = |list -> [t]|.tl;
+    }
+    return |accu -> [t]|;
+}
+
+Int abs(Int |n -> null|) {
+    if (|n -> Int| < 0) {
+        return -|n -> Int|;
+    } else {
+        return |n -> Int|;
+    }
+}
+
+(|b -> null|, |a -> null|) swapCopy((|a -> null|, |b -> null|) |pair -> null|) {
+    return (|pair -> (a, b)|.snd, |pair -> (a, b)|.fst);
+}
+
+(|a -> null|, |a -> null|) swap((|a -> null|, |a -> null|) |tuple -> null|) {
+    a tmp = |tuple -> (a, a)|.fst;
+    |tuple -> (a, a)|.fst = |tuple -> (a, a)|.snd;
+    |tuple -> (a, a)|.snd = |tmp -> a|;
+    return |tuple -> (a, a)|;
+}
+
+[|t -> null|] append([|t -> null|] |l1 -> null|, [|t -> null|] |l2 -> null|) {
+    if |isEmpty -> Bool|(|l1 -> [t]|) {
+        return |l2 -> [t]|;
+    } else {
+        |l1 -> [t]|.tl = |append -> [t]|(|l1 -> [t]|.tl, |l2 -> [t]|);
+        return |l1 -> [t]|;
+    }
+}
+
+[Int] squareOddNumbers([Int] |list -> null|) {
+    while (!|isEmpty -> Bool|(|list -> [Int]|) && |list -> [Int]|.hd % 2 == 0) {
+        |list -> [Int]| = |list -> [Int]|.tl
+    }
+
+    if (!|isEmpty -> Bool|(|list -> [Int]|)) {
+        |list -> [Int]|.hd = |list -> [Int]|.hd * |list -> [Int]|.hd;
+        |list -> [Int]|.tl = |squareOddNumbers -> [Int]|(|list -> [Int]|.tl);
+    }
+    return |reverse -> [t]|(|list -> [Int]|);
+}

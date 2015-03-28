@@ -1,12 +1,8 @@
 package org.spl.parser;
 
-import org.spl.common.Nonterminal;
-import org.spl.common.Symbol;
-import org.spl.common.Token;
-import org.spl.common.TokenInfo;
+import org.spl.common.*;
 import org.spl.parser.exception.ParsingException;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -18,28 +14,28 @@ public class Parser {
 
     private class StackPair {
 
-        private ASTNodeObject m_nodeObject;
-        private DefaultMutableTreeNode m_parent;
+        private ASTNode m_node;
+        private ASTNode m_parent;
 
-        public StackPair(ASTNodeObject nodeObject, DefaultMutableTreeNode parent) {
-            m_nodeObject = nodeObject;
+        public StackPair(ASTNode node, ASTNode parent) {
+            m_node = node;
             m_parent = parent;
         }
 
-        public ASTNodeObject getObject() {
-            return m_nodeObject;
+        public ASTNode getObject() {
+            return m_node;
         }
 
-        public DefaultMutableTreeNode getParent() {
+        public ASTNode getParent() {
             return m_parent;
         }
 
         @Override
         public String toString() {
             if (m_parent != null) {
-                return "<" + m_nodeObject.toString() + ", " + m_parent.toString() + ">";
+                return "<" + m_node.toString() + ", " + m_parent.toString() + ">";
             } else {
-                return "<" + m_nodeObject.toString() + ", null>";
+                return "<" + m_node.toString() + ", null>";
             }
         }
     }
@@ -53,10 +49,10 @@ public class Parser {
         }
     }
 
-    public DefaultMutableTreeNode parse(LinkedList<TokenInfo> tokenList) throws ParsingException {
+    public ASTNode parse(LinkedList<TokenInfo> tokenList) throws ParsingException {
         Stack<StackPair> stack = new Stack<StackPair>();
-        DefaultMutableTreeNode root = null;
-        stack.push(new StackPair(new ASTNodeObject(Nonterminal.SPL), null)); // Starting nonterminal
+        ASTNode root = null;
+        stack.push(new StackPair(new ASTNode(Nonterminal.SPL), null)); // Starting nonterminal
 
         // Iterates over the set of tokens
         for (TokenInfo tokenInfo : tokenList) {
@@ -78,7 +74,7 @@ public class Parser {
                         ok = true;
                         break;
                     } else if (testFirst(firstSymbol, currentToken) || testFirst(firstSymbol, null)) {
-                        DefaultMutableTreeNode node = new DefaultMutableTreeNode(new ASTNodeObject(peek.getObject().getSymbol()));
+                        ASTNode node = new ASTNode(peek.getObject().getSymbol());
 
                         // Adds the current nonterminal to the tree
                         if (peek.getParent() != null) {
@@ -90,13 +86,19 @@ public class Parser {
                         // Pushes the symbols of the right side of the rule to the stack
                         for (int i = nextSymbols.size() - 1; i >= 0; --i) {
                             Symbol rule = nextSymbols.get(i);
-                            stack.push(new StackPair(new ASTNodeObject(rule), node));
+                            stack.push(new StackPair(new ASTNode(rule), node));
                         }
 
                         ok = true;
                         break;
                     }
                 }
+
+                // DEBUG
+//                for (Enumeration e = stack.elements(); e.hasMoreElements();) {
+//                    System.out.print(((StackPair) e.nextElement()).getObject().toString() + " ");
+//                }
+//                System.out.println();
 
                 // If the current terminal is not the proper one, an exception is thrown
                 if (!ok) {
@@ -112,8 +114,9 @@ public class Parser {
                 if (ParserMaps.ASTAllowedTokenList.contains(currentToken)) {
                     StackPair last = stack.peek();
                     last.getParent().add(
-                            new DefaultMutableTreeNode(
-                                    new ASTNodeObject(currentToken, currentToken, currentString)));
+                            new ASTNode(currentToken, currentToken, currentString,
+                                    tokenInfo.getLineNumber(), tokenInfo.getColumnNumber()));
+//                    System.out.println(tokenInfo.getLineNumber() + " " + tokenInfo.getColumnNumber());
                 }
 
                 stack.pop(); // Removes the matched terminal from the stack

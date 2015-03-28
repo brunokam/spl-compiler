@@ -83,6 +83,11 @@ public class Grammar {
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Op25));
         firstSetMap.put(Nonterminal.MoreOp25, set);
 
+        set = new HashSet<Token>();
+        set.add(Token.PUNC_COMMA);
+        set.add(Token.BRA_ROUND_END);
+        firstSetMap.put(Nonterminal.RestAfterBracket, set);
+
         set = new HashSet<Token>(firstSetMap.get(Nonterminal.Op1));
         set.add(Token.IDENTIFIER);
         set.add(Token.NUMERIC);
@@ -121,23 +126,23 @@ public class Grammar {
         set = new HashSet<Token>();
         set.add(Token.FIELD);
         set.add(Token.BRA_ROUND_START);
-        firstSetMap.put(Nonterminal.ExpFieldOrFunc, set);
+        firstSetMap.put(Nonterminal.ExpGetterOrFunc, set);
 
         set = new HashSet<Token>();
         set.add(Token.FIELD);
         set.add(null);
-        firstSetMap.put(Nonterminal.Field, set);
+        firstSetMap.put(Nonterminal.Getter, set);
 
         set = new HashSet<Token>();
-        set.add(Token.GET_HEAD);
-        set.add(Token.GET_TAIL);
-        set.add(Token.GET_FIRST);
-        set.add(Token.GET_SECOND);
-        firstSetMap.put(Nonterminal.FieldRest, set);
+        set.add(Token.GETTER_HEAD);
+        set.add(Token.GETTER_TAIL);
+        set.add(Token.GETTER_FIRST);
+        set.add(Token.GETTER_SECOND);
+        firstSetMap.put(Nonterminal.GetterRest, set);
 
         set = new HashSet<Token>();
         set.add(Token.FIELD);
-        firstSetMap.put(Nonterminal.MoreField, set);
+        firstSetMap.put(Nonterminal.MoreGetter, set);
 
         set = new HashSet<Token>();
         set.add(Token.BRA_ROUND_START);
@@ -278,7 +283,6 @@ public class Grammar {
         // Body
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.MoreVarDecl);
-        list.add(Nonterminal.Stmt);
         list.add(Nonterminal.MoreStmt);
         rulesMap.put(Nonterminal.Body, new ArrayList<ArrayList<Symbol>>());
         rulesMap.get(Nonterminal.Body).add(list);
@@ -488,7 +492,7 @@ public class Grammar {
         rulesMap.get(Nonterminal.RestOfStmt).add(list);
 
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Field);
+        list.add(Nonterminal.Getter);
         list.add(Token.OPERATOR_ASSIGN);
         list.add(Nonterminal.Exp);
         list.add(Token.PUNC_SEMICOLON);
@@ -555,15 +559,7 @@ public class Grammar {
         list = new ArrayList<Symbol>();
         list.add(Token.BRA_ROUND_START);
         list.add(Nonterminal.Exp);
-        list.add(Token.PUNC_COMMA);
-        list.add(Nonterminal.Exp);
-        list.add(Token.BRA_ROUND_END);
-        rulesMap.get(Nonterminal.E5).add(list);
-
-        list = new ArrayList<Symbol>();
-        list.add(Token.BRA_ROUND_START);
-        list.add(Nonterminal.Exp);
-        list.add(Token.BRA_ROUND_END);
+        list.add(Nonterminal.RestAfterBracket);
         rulesMap.get(Nonterminal.E5).add(list);
 
         list = new ArrayList<Symbol>();
@@ -572,8 +568,20 @@ public class Grammar {
 
         list = new ArrayList<Symbol>();
         list.add(Token.IDENTIFIER);
-        list.add(Nonterminal.ExpFieldOrFunc);
+        list.add(Nonterminal.ExpGetterOrFunc);
         rulesMap.get(Nonterminal.E5).add(list);
+
+        // RestAfterBracket
+        list = new ArrayList<Symbol>();
+        list.add(Token.BRA_ROUND_END);
+        rulesMap.put(Nonterminal.RestAfterBracket, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.RestAfterBracket).add(list);
+
+        list = new ArrayList<Symbol>();
+        list.add(Token.PUNC_COMMA);
+        list.add(Nonterminal.Exp);
+        list.add(Token.BRA_ROUND_END);
+        rulesMap.get(Nonterminal.RestAfterBracket).add(list);
 
         // MoreOp21
         list = new ArrayList<Symbol>();
@@ -706,57 +714,57 @@ public class Grammar {
         list.add(Token.OPERATOR_NEGATE);
         rulesMap.get(Nonterminal.Op1).add(list);
 
-        // ExpFieldOrFunc
+        // ExpGetterOrFunc
         list = new ArrayList<Symbol>();
         list.add(Nonterminal.FuncCallRest);
-        rulesMap.put(Nonterminal.ExpFieldOrFunc, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.ExpFieldOrFunc).add(list);
+        rulesMap.put(Nonterminal.ExpGetterOrFunc, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.ExpGetterOrFunc).add(list);
 
         list = new ArrayList<Symbol>();
-        list.add(Nonterminal.Field);
-        rulesMap.get(Nonterminal.ExpFieldOrFunc).add(list);
+        list.add(Nonterminal.Getter);
+        rulesMap.get(Nonterminal.ExpGetterOrFunc).add(list);
 
-        // Field
+        // Getter
         list = new ArrayList<Symbol>();
         list.add(Token.FIELD);
-        list.add(Nonterminal.FieldRest);
-        list.add(Nonterminal.MoreField);
-        rulesMap.put(Nonterminal.Field, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.Field).add(list);
+        list.add(Nonterminal.GetterRest);
+        list.add(Nonterminal.MoreGetter);
+        rulesMap.put(Nonterminal.Getter, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.Getter).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.Field).add(list);
+        rulesMap.get(Nonterminal.Getter).add(list);
 
-        // FieldRest
+        // GetterRest
         list = new ArrayList<Symbol>();
-        list.add(Token.GET_HEAD);
-        rulesMap.put(Nonterminal.FieldRest, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.FieldRest).add(list);
-
-        list = new ArrayList<Symbol>();
-        list.add(Token.GET_TAIL);
-        rulesMap.get(Nonterminal.FieldRest).add(list);
+        list.add(Token.GETTER_HEAD);
+        rulesMap.put(Nonterminal.GetterRest, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.GetterRest).add(list);
 
         list = new ArrayList<Symbol>();
-        list.add(Token.GET_FIRST);
-        rulesMap.get(Nonterminal.FieldRest).add(list);
+        list.add(Token.GETTER_TAIL);
+        rulesMap.get(Nonterminal.GetterRest).add(list);
 
         list = new ArrayList<Symbol>();
-        list.add(Token.GET_SECOND);
-        rulesMap.get(Nonterminal.FieldRest).add(list);
+        list.add(Token.GETTER_FIRST);
+        rulesMap.get(Nonterminal.GetterRest).add(list);
 
-        // MoreField
+        list = new ArrayList<Symbol>();
+        list.add(Token.GETTER_SECOND);
+        rulesMap.get(Nonterminal.GetterRest).add(list);
+
+        // MoreGetter
         list = new ArrayList<Symbol>();
         list.add(Token.FIELD);
-        list.add(Nonterminal.FieldRest);
-        list.add(Nonterminal.MoreField);
-        rulesMap.put(Nonterminal.MoreField, new ArrayList<ArrayList<Symbol>>());
-        rulesMap.get(Nonterminal.MoreField).add(list);
+        list.add(Nonterminal.GetterRest);
+        list.add(Nonterminal.MoreGetter);
+        rulesMap.put(Nonterminal.MoreGetter, new ArrayList<ArrayList<Symbol>>());
+        rulesMap.get(Nonterminal.MoreGetter).add(list);
 
         list = new ArrayList<Symbol>();
         list.add(null);
-        rulesMap.get(Nonterminal.MoreField).add(list);
+        rulesMap.get(Nonterminal.MoreGetter).add(list);
 
         // FuncCallRest
         list = new ArrayList<Symbol>();

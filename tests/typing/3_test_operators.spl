@@ -3,6 +3,16 @@
     Result: test should fail because of using operator or function with wrong types
 */
 
+// Given: function append
+[Int] append ( [Int] l1, [Int] l2 ) {
+    if ( isEmpty ( l1 ))
+        return l2;
+    else {
+        l1.tl = append ( l1.tl, l2 );
+        return l1;
+    }
+}
+
 Void main () {
 
     // Given: integers
@@ -19,7 +29,7 @@ Void main () {
 
     // Correct: list definition
     [Int] list_int = 1 : 2 : 3 : [];
-    [Char] list_int = 'a' : 'a' : 'c' : [];
+    [Char] list_char = 'a' : 'a' : 'c' : [];
 
     // Correct: compare two integers
     bool_t = int_1 <= int_2;
@@ -40,6 +50,6 @@ Void main () {
     list_int.tl = append ( list_int.tl, list_char );
 
     // Error: character added to list of integers
-    [Int] list_int = 1 : 2 : 'f' : [];
+    [Int] list_int_2 = 1 : 2 : 'f' : [];
 
 }

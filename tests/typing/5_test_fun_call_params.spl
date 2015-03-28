@@ -16,8 +16,8 @@
 Void main () {
 
     // Given: some lists of integers and one character
-    Int int_list_1 = 1 : 2 : [];
-    Int int_list_3 = 3 : 4 : [];
+    [Int] int_list_1 = 1 : 2 : [];
+    [Int] int_list_3 = 3 : 4 : [];
 
     // Correct: function called with correct number of parameters
     print ( append(int_list_1, int_list_3) );

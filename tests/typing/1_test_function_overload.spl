@@ -8,7 +8,7 @@ Int add(Int a, Int b) {
     return a + b;
 }
 
-// Correct: function overload
+// Error: function overload
 Char add(Char a, Char b) {
     return a + b;
 }

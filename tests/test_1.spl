@@ -1,10 +1,12 @@
 // Tests whether n is a prime number
+Int a = 5;
+
 Bool isPrime(Int n, Char c)
 {
     Int i = 2;
 Bool result = True;
 
-if (n < 2) {
+if (a < 2) {
     return False;
     }
     while (i * i <= n) {
@@ -15,19 +17,55 @@ if (n % i == 0) {
     return True;
 }
 
+Int c = 45;
+
+(Int, ([[Char]], Char)) tupleTest() {
+    (Int, ([[Char]], Char)) tp = (5, ([], 'c'));
+    Int t2 = (5 + 4);
+    return tp;
+}
+
+// Make a copy of a tuple with swapped elements
+(b, a) swapCopy ( (a, b) pair ) {
+    return ( pair.snd, pair.fst );
+}
+
+// Swap the elements in a tuple
+(a, a) swap ( (a, a) tuple ) {
+    a tmp = tuple.fst ;
+    tuple.fst = tuple.snd;
+    tuple.snd = tmp;
+    return tuple ;
+}
+
+t polymorphicFunc([t] a, [u] b) {
+    a = 'c' : a;
+    return a.tl.tl.tl.hd;
+}
+
 /*
     Tests everything
 */
 Void main() {
-Int n = -23 + 4 * 5;
+Int n = (-23 + 4) * 5;
     Bool x = False;
     Char c = 'a';
-    [Int] arr = [];
 
-    if (!x && c > 5 && n < 20 && c != 'c' && isPrime(n + 2, c)) {
+    [Int] arr1 = 1 : 2 : [];
+    [[Int]] arr2 = arr1 : arr1 : [];
+    [Char] arr3 = 'a' : 'b' : 'c' : [];
+
+    (Int, Char) tpl1 = (5, 'a');
+    (Char, Char) tpl2 = ('a', 'b');
+    (Char, Char) tpl2Swapped = swap(tpl2);
+    (Char, Int) tpl1Swapped = swapCopy(tpl1);
+
+    if (!x && c > 'a' && n < 20 && isPrime(n + 2, c)) {
     print(c); print(True); }
     else {
+        arr1 = arr2.tl.tl.hd;
         print(n + 5 * 3); print(False);
     }
-    lol();
+
+    c = polymorphicFunc(arr3, arr1);
 }

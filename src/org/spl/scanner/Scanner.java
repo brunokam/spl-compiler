@@ -3,7 +3,7 @@ package org.spl.scanner;
 import org.spl.common.TokenInfo;
 import org.spl.common.Token;
 import org.spl.scanner.exception.ScanningException;
-import org.spl.scanner.exception.TokenizationException;
+import org.spl.scanner.exception.TokenizingException;
 
 import java.util.LinkedList;
 
@@ -49,17 +49,21 @@ public class Scanner {
             m_tokenString = "";
         }
 
-        public void close(PreToken preToken) throws TokenizationException {
+        public void close(PreToken preToken) throws TokenizingException {
             Token finalToken;
             int lineNumber = getLineNumber();
             int columnNumber = getColumnNumber() - m_tokenString.length();
 
-            if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
-                finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
-            } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
-                finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(ScannerTokenMaps.CUSTOM_TOKEN);
-            } else {
-                throw new TokenizationException(m_tokenString, lineNumber, columnNumber, m_tokenList);
+            try {
+                if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(m_tokenString)) {
+                    finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(m_tokenString);
+                } else if (ScannerTokenMaps.finalTokenMap.get(preToken).containsKey(ScannerTokenMaps.CUSTOM_TOKEN)) {
+                    finalToken = ScannerTokenMaps.finalTokenMap.get(preToken).get(ScannerTokenMaps.CUSTOM_TOKEN);
+                } else {
+                    throw new TokenizingException(m_tokenString, lineNumber, columnNumber, m_tokenList);
+                }
+            } catch (NullPointerException e) {
+                throw new TokenizingException(m_tokenString, lineNumber, columnNumber, m_tokenList);
             }
 
             m_tokenList.add(new TokenInfo(finalToken, m_tokenString, lineNumber, columnNumber));
@@ -95,8 +99,7 @@ public class Scanner {
         }
     }
 
-    public static LinkedList<TokenInfo> scan(String code)
-            throws ScanningException, TokenizationException {
+    public LinkedList<TokenInfo> scan(String code) throws ScanningException, TokenizingException {
         ScannerIterator it = new ScannerIterator(code);
         Automaton automaton = new Automaton();
 
@@ -117,7 +120,7 @@ public class Scanner {
                     (lastState == State.BRACKET && state == State.BRACKET))) { // Adjacent brackets hack
                 // If the transition starts and ends in two accept states
                 if (Automaton.acceptStateList.contains(lastState) &&
-                        Automaton.acceptStateList.contains(state)) {
+                        (Automaton.acceptStateList.contains(state) || state == State.APOSTROPHE)) {
                     it.close(ScannerTokenMaps.preTokenMap.get(lastState));
                 }
 

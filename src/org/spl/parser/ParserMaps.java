@@ -1,6 +1,5 @@
 package org.spl.parser;
 
-import javafx.util.Pair;
 import org.spl.common.Nonterminal;
 import org.spl.common.Symbol;
 import org.spl.common.Token;
@@ -11,29 +10,20 @@ import java.util.HashMap;
 public class ParserMaps {
 
     public final static ArrayList<Token> ASTAllowedTokenList = new ArrayList<Token>();
-    public final static ArrayList<Token> ASTCollapsingTokenList = new ArrayList<Token>();
+    public final static ArrayList<Symbol> ASTCollapsingSymbolList = new ArrayList<Symbol>();
+    public final static ArrayList<Symbol> ASTTypeNonterminalList = new ArrayList<Symbol>();
     public final static ArrayList<Token> ASTOperator1TokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTOperator2TokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTLogOperatorTokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTCmpOperatorTokenList = new ArrayList<Token>();
     public final static ArrayList<Token> ASTMatOperatorTokenList = new ArrayList<Token>();
-    public final static ArrayList<Token> ASTFieldTokenList = new ArrayList<Token>();
+    public final static ArrayList<Token> ASTGetterTokenList = new ArrayList<Token>();
     public final static ArrayList<Symbol> ASTTempNonterminalList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTPossibleNonterminalList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTBodySymbolList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTExpSymbolList = new ArrayList<Symbol>();
     public final static ArrayList<Symbol> ASTOperator2ContainerSymbolList = new ArrayList<Symbol>();
     public final static HashMap<Token, Token> ASTArrayTypeTokenMap = new HashMap<Token, Token>();
-
-    public final static HashMap<Symbol, String> ASTNewLineSymbolMap = new HashMap<Symbol, String>();
-    public final static HashMap<Symbol, Pair<String, String>> ASTBracketSymbolMap = new HashMap<Symbol, Pair<String, String>>();
-    public final static ArrayList<Symbol> ASTSpaceBeforeSymbolList = new ArrayList<Symbol>();
-    public final static ArrayList<Symbol> ASTSpaceAfterSymbolList = new ArrayList<Symbol>();
-    public final static ArrayList<Symbol> ASTCommaAfterSymbolList = new ArrayList<Symbol>();
-    public final static ArrayList<Symbol> ASTSemicolonAfterSymbolList = new ArrayList<Symbol>();
-
-//    public final static HashMap<Symbol, ArrayList<String>> beforeMap = new HashMap<Symbol, ArrayList<String>>();
-//    public final static HashMap<Symbol, ArrayList<String>> afterMap = new HashMap<Symbol, ArrayList<String>>();
 
     static {
         // AST token list
@@ -50,10 +40,10 @@ public class ParserMaps {
         ASTAllowedTokenList.add(Token.CONDITIONAL_ELSE);
         ASTAllowedTokenList.add(Token.CONDITIONAL_WHILE);
         ASTAllowedTokenList.add(Token.RETURN);
-        ASTAllowedTokenList.add(Token.GET_HEAD);
-        ASTAllowedTokenList.add(Token.GET_TAIL);
-        ASTAllowedTokenList.add(Token.GET_FIRST);
-        ASTAllowedTokenList.add(Token.GET_SECOND);
+        ASTAllowedTokenList.add(Token.GETTER_HEAD);
+        ASTAllowedTokenList.add(Token.GETTER_TAIL);
+        ASTAllowedTokenList.add(Token.GETTER_FIRST);
+        ASTAllowedTokenList.add(Token.GETTER_SECOND);
         ASTAllowedTokenList.add(Token.OPERATOR_ADD);
         ASTAllowedTokenList.add(Token.OPERATOR_SUBTRACT);
         ASTAllowedTokenList.add(Token.OPERATOR_MULTIPLY);
@@ -119,15 +109,16 @@ public class ParserMaps {
         ASTTempNonterminalList.add(Nonterminal.FuncRest);
         ASTTempNonterminalList.add(Nonterminal.MoreVarDecl);
         ASTTempNonterminalList.add(Nonterminal.MoreStmt);
-        ASTTempNonterminalList.add(Nonterminal.MoreField);
-        ASTTempNonterminalList.add(Nonterminal.BasicType);
+        ASTTempNonterminalList.add(Nonterminal.MoreGetter);
+//        ASTTempNonterminalList.add(Nonterminal.BasicType);
         ASTTempNonterminalList.add(Nonterminal.MoreFArgs);
-        ASTTempNonterminalList.add(Nonterminal.FieldRest);
+        ASTTempNonterminalList.add(Nonterminal.Getter);
+        ASTTempNonterminalList.add(Nonterminal.GetterRest);
         ASTTempNonterminalList.add(Nonterminal.MoreActArgs);
         ASTTempNonterminalList.add(Nonterminal.MoreStmt);
         ASTTempNonterminalList.add(Nonterminal.RestOfStmt);
-        ASTTempNonterminalList.add(Nonterminal.VarDeclOrStmt);
-        ASTTempNonterminalList.add(Nonterminal.ExpFieldOrFunc);
+//        ASTTempNonterminalList.add(Nonterminal.VarDeclOrStmt);
+        ASTTempNonterminalList.add(Nonterminal.ExpGetterOrFunc);
         ASTTempNonterminalList.add(Nonterminal.FuncCallRest);
 
         // AST possibly nonterminal list
@@ -137,14 +128,20 @@ public class ParserMaps {
         ASTPossibleNonterminalList.add(Nonterminal.E4);
         ASTPossibleNonterminalList.add(Nonterminal.E5);
 
-        // AST collapsing token list
-        ASTCollapsingTokenList.add(Token.CONDITIONAL_IF);
-        ASTCollapsingTokenList.add(Token.CONDITIONAL_ELSE);
-        ASTCollapsingTokenList.add(Token.CONDITIONAL_WHILE);
-        ASTCollapsingTokenList.add(Token.RETURN);
-        ASTCollapsingTokenList.add(Token.TYPE_INT);
-        ASTCollapsingTokenList.add(Token.TYPE_BOOL);
-        ASTCollapsingTokenList.add(Token.TYPE_CHAR);
+        // AST collapsing symbol list
+        ASTCollapsingSymbolList.add(Token.CONDITIONAL_IF);
+        ASTCollapsingSymbolList.add(Token.CONDITIONAL_ELSE);
+        ASTCollapsingSymbolList.add(Token.CONDITIONAL_WHILE);
+        ASTCollapsingSymbolList.add(Nonterminal.BasicType);
+//        ASTCollapsingSymbolList.add(Token.TYPE_INT);
+//        ASTCollapsingSymbolList.add(Token.TYPE_BOOL);
+//        ASTCollapsingSymbolList.add(Token.TYPE_CHAR);
+
+        // AST type nonterminal list
+        ASTTypeNonterminalList.add(Nonterminal.Type);
+        ASTTypeNonterminalList.add(Nonterminal.BasicType);
+        ASTTypeNonterminalList.add(Nonterminal.ArrayType);
+        ASTTypeNonterminalList.add(Nonterminal.TupleType);
 
         // AST body symbol list
         ASTBodySymbolList.add(Nonterminal.FuncDecl);
@@ -177,57 +174,10 @@ public class ParserMaps {
         ASTArrayTypeTokenMap.put(Token.TYPE_BOOL, Token.ARRTYPE_BOOL);
         ASTArrayTypeTokenMap.put(Token.TYPE_CHAR, Token.ARRTYPE_CHAR);
 
-        // AST field token list
-        ASTFieldTokenList.add(Token.GET_FIRST);
-        ASTFieldTokenList.add(Token.GET_SECOND);
-        ASTFieldTokenList.add(Token.GET_HEAD);
-        ASTFieldTokenList.add(Token.GET_TAIL);
-
-
-
-        // AST new line symbol map
-        ASTNewLineSymbolMap.put(Nonterminal.FuncDecl, "\n\n");
-        ASTNewLineSymbolMap.put(Nonterminal.VarDecl, "\n");
-        ASTNewLineSymbolMap.put(Nonterminal.FuncCall, "\n");
-        ASTNewLineSymbolMap.put(Nonterminal.Stmt, "\n");
-        ASTNewLineSymbolMap.put(Nonterminal.ConditionalStmt, "\n");
-
-        // AST bracket symbol map
-        ASTBracketSymbolMap.put(Nonterminal.DeclArgs, new Pair<String, String>("(", ")"));
-        ASTBracketSymbolMap.put(Nonterminal.CallArgs, new Pair<String, String>("(", ")"));
-        ASTBracketSymbolMap.put(Nonterminal.ConditionalExp, new Pair<String, String>("(", ")"));
-        ASTBracketSymbolMap.put(Nonterminal.TupleType, new Pair<String, String>("(", ")"));
-        ASTBracketSymbolMap.put(Nonterminal.Body, new Pair<String, String>(" {\n", "}"));
-
-        // AST space after symbol list
-        ASTSpaceBeforeSymbolList.add(Nonterminal.Op2);
-        ASTSpaceBeforeSymbolList.add(Nonterminal.ElseStmt);
-
-        // AST space after symbol list
-        ASTSpaceAfterSymbolList.add(Nonterminal.Type);
-        ASTSpaceAfterSymbolList.add(Nonterminal.ArrayType);
-        ASTSpaceAfterSymbolList.add(Nonterminal.TupleType);
-        ASTSpaceAfterSymbolList.add(Token.TYPE_VOID);
-        ASTSpaceAfterSymbolList.add(Nonterminal.DeclSingleArg);
-        ASTSpaceAfterSymbolList.add(Nonterminal.CallSingleArg);
-        ASTSpaceAfterSymbolList.add(Nonterminal.Op2);
-        ASTSpaceAfterSymbolList.add(Token.CONDITIONAL_IF);
-        ASTSpaceAfterSymbolList.add(Token.CONDITIONAL_WHILE);
-        ASTSpaceAfterSymbolList.add(Token.RETURN);
-
-        // AST comma after symbol list
-        ASTCommaAfterSymbolList.add(Nonterminal.DeclSingleArg);
-        ASTCommaAfterSymbolList.add(Nonterminal.CallSingleArg);
-
-        // AST semicolon after symbol list
-        ASTSemicolonAfterSymbolList.add(Nonterminal.VarDecl);
-        ASTSemicolonAfterSymbolList.add(Nonterminal.FuncCall);
-        ASTSemicolonAfterSymbolList.add(Nonterminal.Stmt);
-        ASTSemicolonAfterSymbolList.add(Nonterminal.ReturnStmt);
-
-
-//        ArrayList<String> list2 = new ArrayList<String>();
-//        list2.add(" ");
-//        afterMap.put(Nonterminal.Type, list2);
+        // AST getter token list
+        ASTGetterTokenList.add(Token.GETTER_FIRST);
+        ASTGetterTokenList.add(Token.GETTER_SECOND);
+        ASTGetterTokenList.add(Token.GETTER_HEAD);
+        ASTGetterTokenList.add(Token.GETTER_TAIL);
     }
 }

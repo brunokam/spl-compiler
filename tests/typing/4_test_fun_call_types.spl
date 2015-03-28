@@ -16,8 +16,8 @@
 Void main () {
 
     // Given: some lists of integers and one character
-    Int int_list_1 = 1 : 2 : [];
-    Int int_list_3 = 3 : 4 : [];
+    [Int] int_list_1 = 1 : 2 : [];
+    [Int] int_list_3 = 3 : 4 : [];
     Char char_a = 'a';
 
     // Correct: function called with correct types of parameters
