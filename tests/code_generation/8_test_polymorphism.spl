@@ -1,0 +1,32 @@
+/*
+    Purpose: test polymorphic functions
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: polymorphic function
+T max (T a, T b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+
+Void main () {
+
+    // When: calling max function with integer parameters
+    Int int_2 = max(1, 2);
+    // Then:
+    if (int_2 == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: calling max function with character parameters
+    Char char_b = max('a', 'b');
+    // Then:
+    if (char_b == 'b')
+        print(0);
+    else
+        print(1);
+
+}

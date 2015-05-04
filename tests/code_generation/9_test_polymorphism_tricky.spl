@@ -1,0 +1,30 @@
+/*
+    Purpose: test tricky code with polymorphism
+    Result: test should pass all cases and print only zeros
+            and fail at the last test with runtime error
+*/
+
+// Given: polymorphic function
+Int max (Int a, t b) {
+    if (a > b)
+        return a;
+    else
+        return b;
+}
+
+// Error: it's not deterministic when calling max(5, 6)
+Int max (t a, Int b) {
+
+    // When: calling max function with integer parameters
+    Int int_2 = max(1, 2);
+    // Then:
+    if (int_2 == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: calling max function with mixed parameters
+    // Then: runtime error expected
+    Int a = max(1, 'a');
+
+}

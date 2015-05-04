@@ -1,0 +1,43 @@
+/*
+    Purpose: test function return paths
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: function returning maximum or -1 if values are equal
+Int max (Int a, Int b) {
+    if (a > b)
+        return a;
+    else
+        if (a < b)
+            return b;
+        else
+            return -1;
+}
+
+Void main () {
+
+    // When: calling max function
+    Int int_2 = max(1, 2);
+    // Then:
+    if (int_2 == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: calling max function
+    Int int_5 = max(5, 3);
+    // Then:
+    if (int_5 == 5)
+        print(0);
+    else
+        print(1);
+
+    // When: calling max function
+    Int int_1 = max(10, 10);
+    // Then:
+    if (int_1 == -1)
+        print(0);
+    else
+        print(1);
+
+}

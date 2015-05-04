@@ -1,0 +1,49 @@
+/*
+    Purpose: test lists
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: function append
+[Int] append ( [Int] l1, [Int] l2 ) {
+    if ( isEmpty ( l1 ))
+        return l2;
+    else {
+        l1.tl = append ( l1.tl, l2 );
+        return l1;
+    }
+}
+
+Void main () {
+
+    // Given: list definitions
+    [Int] list_int_1 = 1 : 2 : 3 : [];
+    [Int] list_int_2 = 4 : 5 : 6 : [];
+
+    // When: appending lists
+    [Int] list_appended = append(list_int_1, list_int_2);
+
+    // Then:
+    if (list_int_1.tl == 3)
+        print(0);
+    else
+        print(1);
+
+    // Then:
+    if (list_int_2.hd == 4)
+        print(0);
+    else
+        print(1);
+
+    // Then:
+    if (list_appended.tl == 6)
+        print(0);
+    else
+        print(1);
+
+    // Then:
+    if (list_appended.hd == 1)
+        print(0);
+    else
+        print(1);
+
+}

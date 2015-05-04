@@ -1,0 +1,19 @@
+/*
+    Purpose: check how function parameters works
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: function add
+Int add(Int a, Int b) {
+    return a + b;
+}
+
+Void main () {
+    // When: calling function
+    Int c = add(2, 3);
+    // Then:
+    if (c == 5)
+        print(0);
+    else
+        print(1);
+}

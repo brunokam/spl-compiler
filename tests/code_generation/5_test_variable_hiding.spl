@@ -1,0 +1,32 @@
+/*
+    Purpose: check how global variables and variables hiding works
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: global variable
+Int variable = 10;
+
+// Given: global variable is hidden behind the function parameter
+Int add_five(Int variable) {
+    return variable + 5;
+}
+
+Void main () {
+
+    // When: we are using global variable
+    Int a = add_five(variable);
+    // Then:
+    if (a == 15)
+        print(0);
+    else
+        print(1);
+
+    // When: we are using local variable
+    Int b = add_five(20);
+    // Then:
+    if (b == 25)
+        print(0);
+    else
+        print(1);
+
+}

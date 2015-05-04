@@ -1,0 +1,41 @@
+/*
+    Purpose: test assignment process
+    Result: test should pass all cases and print only zeros
+*/
+
+Void main () {
+
+    // Given: integers
+    Int integer = 1;
+
+    // Given: characters
+    Char character = 'a';
+
+    // Given: booleans
+    Bool boolean = True;
+
+    // When: assigning integer
+    integer = 2;
+    // Then:
+    if (integer == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: assigning char
+    character = 'b';
+    // Then:
+    if (character == 'b')
+        print(0);
+    else
+        print(1);
+
+    // When: assigning boolean
+    boolean = False;
+    // Then:
+    if (boolean == False)
+        print(0);
+    else
+        print(1);
+
+}

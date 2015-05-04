@@ -1,0 +1,44 @@
+/*
+    Purpose: test tuples
+    Result: test should pass all cases and print only zeros
+*/
+
+Void main () {
+
+    // Given: simple tuples
+    (Int, Int) tuple_int = (1, 2);
+    (Char, Char) tuple_char = ('a', 'b');
+
+    // Given: nested tuples
+    ((Int, Int), Int) tuple_int_nested = ((1, 2), 3);
+    (Char, (Char, Char) tuple_char_nested = ('a', ('b', 'c');
+
+    // When: working with simple tuples
+    // Then:
+    if (tuple_int.snd == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: working with simple tuples
+    // Then:
+    if (tuple_char.fst == 'a')
+        print(0);
+    else
+        print(1);
+
+    // When: working with nested tuples
+    // Then:
+    if (tuple_int_nested.fst.snd == 2)
+        print(0);
+    else
+        print(1);
+
+    // When: working with nested tuples
+    // Then:
+    if (tuple_char_nested.snd.fst == 'b')
+        print(0);
+    else
+        print(1);
+
+}

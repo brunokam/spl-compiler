@@ -1,0 +1,47 @@
+/*
+    Purpose: test how function call works
+    Result: test should pass all cases and print only zeros
+*/
+
+// Given: function returning integer
+Int get_int () {
+    return 5;
+}
+
+// Given: function returning character
+Char get_character () {
+    return 'a';
+}
+
+// Given: function returning boolean
+Boolean get_bool () {
+    return True;
+}
+
+Void main () {
+
+    // When: calling integer function
+    Int int_5 = get_int();
+    // Then:
+    if (int_5 == 5)
+        print(0);
+    else
+        print(1);
+
+    // When: calling character function
+    Char char_a = get_char();
+    // Then:
+    if (char_a == 'a')
+        print(0);
+    else
+        print(1);
+
+    // When: calling boolean function
+    Bool bool_t = get_bool();
+    // Then:
+    if (bool_t == True)
+        print(0);
+    else
+        print(1);
+
+}

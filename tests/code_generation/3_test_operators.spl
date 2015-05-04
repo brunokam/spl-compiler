@@ -1,0 +1,44 @@
+/*
+    Purpose: test operators
+    Result: test should pass all cases and print only zeros
+*/
+
+Void main () {
+
+    // Given: integers
+    Int int_1 = 1;
+    Int int_2 = 2;
+
+    // Given: characters
+    Char char_a = 'a';
+    Char char_b = 'b';
+
+    // Given: booleans
+    Bool bool_t = True;
+    Bool bool_f = False;
+
+    // When: compare two integers
+    bool_t = int_1 <= int_2;
+    // Then:
+    if (bool_t == True)
+        print(0);
+    else
+        print(1);
+
+    // When: append two characters
+    char_a = char_a + char_b;
+    // Then:
+    if (char_a == 'c')
+        print(0);
+    else
+        print(1);
+
+    // When: compare two booleans
+    bool_t = bool_t != bool_f;
+    // Then:
+    if (bool_t == True)
+        print(0);
+    else
+        print(1);
+
+}
