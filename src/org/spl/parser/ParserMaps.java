@@ -140,7 +140,7 @@ public class ParserMaps {
         // AST type nonterminal list
         ASTTypeNonterminalList.add(Nonterminal.Type);
         ASTTypeNonterminalList.add(Nonterminal.BasicType);
-        ASTTypeNonterminalList.add(Nonterminal.ArrayType);
+        ASTTypeNonterminalList.add(Nonterminal.ListType);
         ASTTypeNonterminalList.add(Nonterminal.TupleType);
 
         // AST body symbol list

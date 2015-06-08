@@ -11,11 +11,29 @@ public abstract class Type {
         m_typeString = typeString;
     }
 
-    public abstract boolean isPolymorphic();
+    public abstract boolean isBasicType();
+
+    public abstract boolean isPolymorphicType();
+
+    public abstract boolean isTupleType();
+
+    public abstract boolean isListType();
+
+    public abstract boolean isEmptyListType();
+
+    public abstract boolean containsPolymorphicTypes();
 
     public abstract boolean unify(Type type);
 
+    public abstract Integer getAddressSize();
+
+    public abstract Integer getBodySize();
+
     public abstract Type replace(HashMap<String, Type> polymorphicMap);
+
+    public Integer getOverallSize() {
+        return getBodySize() + 2;
+    }
 
     private static HashMap<String, Type> _buildPolymorphicMap(final Type type1, final Type type2) {
         if (type1 instanceof PolymorphicType) {
@@ -41,13 +59,13 @@ public abstract class Type {
         } else {
             if (type1 instanceof BasicType) {
                 return new HashMap<String, Type>();
-            } else if ((type1 instanceof ArrayType && type2 instanceof EmptyArrayType) ||
-                    (type1 instanceof EmptyArrayType && type2 instanceof ArrayType)) {
+            } else if ((type1 instanceof ListType && type2 instanceof EmptyListType) ||
+                    (type1 instanceof EmptyListType && type2 instanceof ListType)) {
                 return new HashMap<String, Type>();
-            } else if (type1 instanceof ArrayType) {
-                ArrayType arrayType1 = (ArrayType) type1;
-                ArrayType arrayType2 = (ArrayType) type2;
-                return _buildPolymorphicMap(arrayType1.getInnerType(), arrayType2.getInnerType());
+            } else if (type1 instanceof ListType) {
+                ListType listType1 = (ListType) type1;
+                ListType listType2 = (ListType) type2;
+                return _buildPolymorphicMap(listType1.getInnerType(), listType2.getInnerType());
             } else if (type1 instanceof TupleType) {
                 TupleType tupleType1 = (TupleType) type1;
                 TupleType tupleType2 = (TupleType) type2;
@@ -78,10 +96,5 @@ public abstract class Type {
         } else {
             throw new RuntimeException();
         }
-    }
-
-    @Override
-    public String toString() {
-        return m_typeString;
     }
 }

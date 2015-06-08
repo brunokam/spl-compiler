@@ -6,10 +6,11 @@
 
 // Given: polymorphic function
 Int max (Int a, t b) {
-    if (a > b)
+    if (a > b) {
         return a;
-    else
+    } else {
         return b;
+    }
 }
 
 // Error: it's not deterministic when calling max(5, 6)
@@ -18,10 +19,11 @@ Int max (t a, Int b) {
     // When: calling max function with integer parameters
     Int int_2 = max(1, 2);
     // Then:
-    if (int_2 == 2)
+    if (int_2 == 2) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // When: calling max function with mixed parameters
     // Then: runtime error expected

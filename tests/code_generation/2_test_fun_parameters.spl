@@ -12,8 +12,9 @@ Void main () {
     // When: calling function
     Int c = add(2, 3);
     // Then:
-    if (c == 5)
+    if (c == 5) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 }

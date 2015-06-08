@@ -2,15 +2,15 @@ package org.spl.common.type;
 
 import java.util.HashMap;
 
-public class BasicType extends Type {
+public class EmptyListType extends ListType {
 
-    public BasicType(String typeString) {
-        super(typeString);
+    public EmptyListType() {
+        super(new PolymorphicType("t"));
     }
 
     @Override
     public boolean isBasicType() {
-        return true;
+        return false;
     }
 
     @Override
@@ -30,7 +30,7 @@ public class BasicType extends Type {
 
     @Override
     public boolean isEmptyListType() {
-        return false;
+        return true;
     }
 
     @Override
@@ -40,7 +40,7 @@ public class BasicType extends Type {
 
     @Override
     public boolean unify(Type type) {
-        if (type instanceof BasicType && m_typeString.equals(type.toString())) {
+        if (type instanceof ListType) {
             return true;
         } else if (type instanceof PolymorphicType) {
             return true;
@@ -51,12 +51,12 @@ public class BasicType extends Type {
 
     @Override
     public Integer getAddressSize() {
-        return 1;
+        return 2;
     }
 
     @Override
     public Integer getBodySize() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -66,6 +66,6 @@ public class BasicType extends Type {
 
     @Override
     public String toString() {
-        return m_typeString;
+        return "[]";
     }
 }

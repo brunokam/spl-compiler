@@ -303,7 +303,7 @@ public class ASTPostprocessor {
             } else if (ParserMaps.ASTTypeNonterminalList.contains(nodeSymbol) &&
                     parentSymbol == Nonterminal.Type && node.getSiblingCount() == 3) {
                 parent
-                        .setSymbol(Nonterminal.ArrayType)
+                        .setSymbol(Nonterminal.ListType)
                         .setLineNumber(node.getLineNumber())
                         .setColumnNumber(node.getColumnNumber());
 
@@ -338,9 +338,7 @@ public class ASTPostprocessor {
                 node
                         .setSymbol(Nonterminal.Type)
                         .setToken(Token.TYPE_POLYMORPHIC);
-            }*/ else if (nodeSymbol == Nonterminal.Type && node.getChildCount() == 2) {
-                node.setSymbol(Nonterminal.TupleType);
-            } else if (nodeToken == Token.OPERATOR_ASSIGN && parentSymbol == Nonterminal.FuncDecl) {
+            }*/ else if (nodeToken == Token.OPERATOR_ASSIGN && parentSymbol == Nonterminal.FuncDecl) {
                 parent.setSymbol(Nonterminal.GlobalVarDecl);
             } else if (nodeSymbol == Nonterminal.VarDeclOrStmt) {
                 int i = parent.getIndex(node);
@@ -370,6 +368,10 @@ public class ASTPostprocessor {
     private void process3(ASTNode node) {
         Symbol nodeSymbol = node.getSymbol();
         Token nodeToken = node.getToken();
+
+        ASTNode parent = (ASTNode) node.getParent();
+        Symbol parentSymbol = parent != null ? parent.getSymbol() : null;
+        Token parentToken = parent != null ? parent.getToken() : null;
 
         // Iterates over children
         ArrayList children = Collections.list(node.children());
@@ -439,48 +441,85 @@ public class ASTPostprocessor {
             }
         }
 
+        if (parent != null) {
+            if (nodeSymbol == Nonterminal.Exp &&
+                    (parentToken == Token.CONDITIONAL_IF || parentToken == Token.CONDITIONAL_WHILE)) {
+                node.setSymbol(Nonterminal.ConditionalExp);
+            } else if (nodeSymbol == Nonterminal.Exp && parentSymbol == Nonterminal.Exp && parent.getChildCount() == 1) {
+                children = Collections.list(node.children());
+                for (Object child : children) {
+                    parent.add((ASTNode) child);
+                }
+
+                parent.remove(node);
+            } else if (nodeSymbol == Nonterminal.RestAfterBracket && parentSymbol == Nonterminal.Exp) {
+                int i = parent.getIndex(node);
+                children = Collections.list(node.children());
+                for (Object child : children) {
+                    parent.insert((ASTNode) child, i++);
+                }
+
+                parent.setSymbol(Nonterminal.TupleExp);
+                parent.remove(node);
+            } else if (nodeSymbol == Token.IDENTIFIER &&
+                    parentSymbol == Nonterminal.Stmt &&
+                    node.getPreviousSibling() != null &&
+                    node.getNextSibling() != null) {
+                ASTNode leftSibling = (ASTNode) node.getPreviousSibling();
+                Token leftSiblingToken = leftSibling.getToken();
+
+                ASTNode rightSibling = (ASTNode) node.getNextSibling();
+                Token rightSiblingToken = rightSibling.getToken();
+
+                if (leftSiblingToken == Token.IDENTIFIER && rightSiblingToken == Token.OPERATOR_ASSIGN) {
+                    parent.setSymbol(Nonterminal.VarDecl);
+                    leftSibling.setSymbol(Nonterminal.PolymorphicType);
+                }
+            } else if (nodeSymbol == Token.IDENTIFIER &&
+                    parentSymbol == Nonterminal.FuncDecl) {
+                parent
+                        .setLineNumber(node.getLineNumber())
+                        .setColumnNumber(node.getColumnNumber());
+            } else if (nodeSymbol == Nonterminal.CallArgs && parentSymbol == Nonterminal.Stmt) {
+                parent.setSymbol(Nonterminal.FuncCall);
+            } else if (nodeSymbol == Nonterminal.Type && node.getChildCount() == 2) {
+                node.setSymbol(Nonterminal.TupleType);
+            }
+        }
+    }
+
+    private void process4(ASTNode node) {
+        Symbol nodeSymbol = node.getSymbol();
+        Token nodeToken = node.getToken();
+
         ASTNode parent = (ASTNode) node.getParent();
         Symbol parentSymbol = parent != null ? parent.getSymbol() : null;
         Token parentToken = parent != null ? parent.getToken() : null;
 
-        if (nodeSymbol == Nonterminal.Exp &&
-                (parentToken == Token.CONDITIONAL_IF || parentToken == Token.CONDITIONAL_WHILE)) {
-            node.setSymbol(Nonterminal.ConditionalExp);
-        } else if (nodeSymbol == Nonterminal.Exp && parentSymbol == Nonterminal.Exp && parent.getChildCount() == 1) {
-            children = Collections.list(node.children());
-            for (Object child : children) {
-                parent.add((ASTNode) child);
-            }
+        // Iterates over children
+        ArrayList children = Collections.list(node.children());
+        Collections.reverse(children);
+        for (Object child : children) {
+            process4((ASTNode) child);
+        }
 
-            parent.remove(node);
-        } else if (nodeSymbol == Nonterminal.RestAfterBracket && parentSymbol == Nonterminal.Exp) {
-            int i = parent.getIndex(node);
-            children = Collections.list(node.children());
-            for (Object child : children) {
-                parent.insert((ASTNode) child, i++);
-            }
-
-            parent.setSymbol(Nonterminal.TupleExp);
-            parent.remove(node);
-        } else if (nodeSymbol == Token.IDENTIFIER &&
-                parentSymbol == Nonterminal.Stmt &&
-                node.getPreviousSibling() != null &&
-                node.getNextSibling() != null) {
+        if (nodeSymbol == Nonterminal.Getter && node.getNextSibling() == null) {
             ASTNode leftSibling = (ASTNode) node.getPreviousSibling();
-            Token leftSiblingToken = leftSibling.getToken();
 
-            ASTNode rightSibling = (ASTNode) node.getNextSibling();
-            Token rightSiblingToken = rightSibling.getToken();
+            if (leftSibling.getSymbol() == Nonterminal.Getter) {
+                int position = parent.getIndex(node);
+                ASTNode expression = new ASTNode(Nonterminal.Exp);
+                parent.insert(expression, position);
 
-            if (leftSiblingToken == Token.IDENTIFIER && rightSiblingToken == Token.OPERATOR_ASSIGN) {
-                parent.setSymbol(Nonterminal.VarDecl);
-                leftSibling.setSymbol(Nonterminal.PolymorphicType);
+                ArrayList<ASTNode> getterSiblings = new ArrayList<ASTNode>();
+                for (int i = 0; i < position; ++i) {
+                    getterSiblings.add((ASTNode) parent.getChildAt(i));
+                }
+
+                for (ASTNode getter : getterSiblings) {
+                    expression.add(getter);
+                }
             }
-        } else if (nodeSymbol == Token.IDENTIFIER &&
-                parentSymbol == Nonterminal.FuncDecl) {
-            parent
-                    .setLineNumber(node.getLineNumber())
-                    .setColumnNumber(node.getColumnNumber());
         }
     }
 
@@ -490,5 +529,6 @@ public class ASTPostprocessor {
         process(root);
         process2(root);
         process3(root);
+        process4(root);
     }
 }

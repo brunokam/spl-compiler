@@ -17,25 +17,27 @@ Void main () {
     // When: assigning integer
     integer = 2;
     // Then:
-    if (integer == 2)
+    if (integer == 2) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // When: assigning char
     character = 'b';
     // Then:
-    if (character == 'b')
+    if (character == 'b') {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // When: assigning boolean
     boolean = False;
     // Then:
-    if (boolean == False)
+    if (boolean == False) {
         print(0);
-    else
+    } else {
         print(1);
-
+    }
 }

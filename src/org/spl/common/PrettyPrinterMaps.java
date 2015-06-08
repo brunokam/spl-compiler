@@ -44,7 +44,7 @@ public class PrettyPrinterMaps {
         ASTBracketSymbolMap.put(Nonterminal.TupleExp, new Pair<String, String>("(", ")"));
         ASTBracketSymbolMap.put(Nonterminal.TupleType, new Pair<String, String>("(", ")"));
         ASTBracketSymbolMap.put(Nonterminal.Body, new Pair<String, String>(" {\n", "}"));
-        ASTBracketSymbolMap.put(Nonterminal.ArrayType, new Pair<String, String>("[", "]"));
+        ASTBracketSymbolMap.put(Nonterminal.ListType, new Pair<String, String>("[", "]"));
 
         // AST space before symbol list
         ASTSpaceBeforeSymbolList.add(Nonterminal.Op2);
@@ -53,7 +53,7 @@ public class PrettyPrinterMaps {
         // AST space after symbol list
         ASTSpaceAfterSymbolList.add(Nonterminal.BasicType);
         ASTSpaceAfterSymbolList.add(Nonterminal.PolymorphicType);
-        ASTSpaceAfterSymbolList.add(Nonterminal.ArrayType);
+        ASTSpaceAfterSymbolList.add(Nonterminal.ListType);
         ASTSpaceAfterSymbolList.add(Nonterminal.TupleType);
         ASTSpaceAfterSymbolList.add(Token.TYPE_VOID);
         ASTSpaceAfterSymbolList.add(Nonterminal.DeclSingleArg);

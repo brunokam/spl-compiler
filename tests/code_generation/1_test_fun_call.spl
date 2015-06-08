@@ -4,44 +4,49 @@
 */
 
 // Given: function returning integer
-Int get_int () {
-    return 5;
+Int get_int (Int i) {
+    return i;
 }
 
 // Given: function returning character
-Char get_character () {
-    return 'a';
+Char get_character (Char c) {
+    return c;
 }
 
 // Given: function returning boolean
-Boolean get_bool () {
-    return True;
+Boolean get_bool (Bool b) {
+    return b;
 }
 
 Void main () {
 
     // When: calling integer function
-    Int int_5 = get_int();
-    // Then:
-    if (int_5 == 5)
-        print(0);
-    else
-        print(1);
+    Int int_5 = get_int(5);
 
     // When: calling character function
-    Char char_a = get_char();
-    // Then:
-    if (char_a == 'a')
-        print(0);
-    else
-        print(1);
+    Char char_a = get_character('a');
 
     // When: calling boolean function
-    Bool bool_t = get_bool();
-    // Then:
-    if (bool_t == True)
-        print(0);
-    else
-        print(1);
+    Bool bool_t = get_bool(True);
 
+    // Then:
+    if (int_5 == 5) {
+        print(0);
+    } else {
+        print(1);
+    }
+
+    // Then:
+    if (char_a == 'a') {
+        print(0);
+    } else {
+        print(1);
+    }
+
+    // Then:
+    if (bool_t == True) {
+        print(0);
+    } else {
+        print(1);
+    }
 }

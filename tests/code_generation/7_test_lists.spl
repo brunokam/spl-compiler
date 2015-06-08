@@ -23,27 +23,30 @@ Void main () {
     [Int] list_appended = append(list_int_1, list_int_2);
 
     // Then:
-    if (list_int_1.tl.hd == 2)
+    if (list_int_1.tl.hd == 2) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // Then:
-    if (list_int_2.hd == 4)
+    if (list_int_2.hd == 4) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // Then:
-    if (list_appended.tl.tl.hd == 3)
+    if (list_appended.tl.tl.hd == 3) {
         print(0);
-    else
+    } else {
         print(1);
+    }
 
     // Then:
-    if (list_appended.hd == 1)
+    if (list_appended.hd == 1) {
         print(0);
-    else
+    } else {
         print(1);
-
+    }
 }

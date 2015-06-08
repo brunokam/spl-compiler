@@ -2,15 +2,22 @@ package org.spl.common.type;
 
 import java.util.HashMap;
 
-public class BasicType extends Type {
+public class ListType extends Type {
 
-    public BasicType(String typeString) {
-        super(typeString);
+    private Type m_innerType;
+
+    public ListType(Type innerType) {
+        super("[" + innerType.toString() + "]");
+        m_innerType = innerType;
+    }
+
+    public Type getInnerType() {
+        return m_innerType;
     }
 
     @Override
     public boolean isBasicType() {
-        return true;
+        return false;
     }
 
     @Override
@@ -25,7 +32,7 @@ public class BasicType extends Type {
 
     @Override
     public boolean isListType() {
-        return false;
+        return true;
     }
 
     @Override
@@ -35,12 +42,17 @@ public class BasicType extends Type {
 
     @Override
     public boolean containsPolymorphicTypes() {
-        return false;
+        return m_innerType.containsPolymorphicTypes();
     }
 
     @Override
     public boolean unify(Type type) {
-        if (type instanceof BasicType && m_typeString.equals(type.toString())) {
+        if (type instanceof ListType) {
+            ListType listType = (ListType) type;
+            if (m_innerType.unify(listType.getInnerType())) {
+                return true;
+            }
+        } else if (type instanceof EmptyListType) {
             return true;
         } else if (type instanceof PolymorphicType) {
             return true;
@@ -56,16 +68,16 @@ public class BasicType extends Type {
 
     @Override
     public Integer getBodySize() {
-        return 1;
+        return 2;
     }
 
     @Override
     public Type replace(HashMap<String, Type> polymorphicMap) {
-        return this;
+        return new ListType(m_innerType.replace(polymorphicMap));
     }
 
     @Override
     public String toString() {
-        return m_typeString;
+        return "[" + m_innerType.toString() + "]";
     }
 }

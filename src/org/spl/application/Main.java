@@ -1,8 +1,10 @@
 package org.spl.application;
 
 
+import org.spl.codegenerator.CodeGenerator;
 import org.spl.common.ASTNode;
 import org.spl.common.exception.MissingSourceFileException;
+import org.spl.common.structure.Scope;
 import org.spl.typechecker.TypeChecker;
 import org.spl.printer.TypedPrettyPrinter;
 import org.spl.binder.Binder;
@@ -21,6 +23,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.LinkedList;
 
@@ -65,18 +68,28 @@ public class Main {
 
             // Prints string representation of the tree
             String output = ASTToString(AST);
-//            System.out.println(output.length());
-            System.out.println(output);
+//            System.out.println(output);
 
             Binder binder = new Binder();
-            binder.run(AST);
+            Scope globalScope = binder.run(AST);
 
             TypeChecker typeChecker = new TypeChecker();
             typeChecker.run(AST);
 
+            CodeGenerator codeGenerator = new CodeGenerator();
+            ArrayList<String[]> instructionList = codeGenerator.run(globalScope);
+
+            for (String[] inst : instructionList) {
+                System.out.print(inst[0]);
+                for (int i = 1; i < inst.length; ++i) {
+                    System.out.print(" " + inst[i]);
+                }
+                System.out.println();
+            }
+
             TypedPrettyPrinter prettyPrinter = new TypedPrettyPrinter();
-            System.out.println("####### TYPED PRETTY PRINTER CODE #######");
-            System.out.println(prettyPrinter.run(AST));
+//            System.out.println("####### TYPED PRETTY PRINTER CODE #######");
+//            System.out.println(prettyPrinter.run(AST));
         } catch (IOException e) {
             System.out.println("Error: no such file: " + e.getMessage());
         } catch (MissingSourceFileException e) {

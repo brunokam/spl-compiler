@@ -34,8 +34,8 @@ public class TypeFactory {
             type = new BasicType(m_basicTypeMap.get(nodeToken));
         } else if (nodeSymbol == Nonterminal.PolymorphicType && node.getChildCount() == 0) {
             type = new PolymorphicType(node.getString());
-        } else if (nodeSymbol == Nonterminal.ArrayType && node.getChildCount() == 1) {
-            type = new ArrayType(innerTypes.get(0));
+        } else if (nodeSymbol == Nonterminal.ListType && node.getChildCount() == 1) {
+            type = new ListType(innerTypes.get(0));
         } else if (nodeSymbol == Nonterminal.TupleType && node.getChildCount() == 2) {
             type = new TupleType(innerTypes.get(0), innerTypes.get(1));
         } else {
@@ -54,7 +54,7 @@ public class TypeFactory {
         } else if (nodeToken == Token.BOOL_TRUE || nodeToken == Token.BOOL_FALSE) {
             type = new BasicType(m_basicTypeMap.get(Token.TYPE_BOOL));
         } else if (nodeToken == Token.EMPTY_ARRAY) {
-            type = new EmptyArrayType();
+            type = new EmptyListType();
         } else {
             throw new RuntimeException();
         }

@@ -3,14 +3,12 @@ package org.spl.binder;
 import org.spl.binder.exception.IncorrectTypeDeclarationException;
 import org.spl.binder.exception.MultipleDeclarationException;
 import org.spl.binder.exception.UndeclaredUseException;
+import org.spl.codegenerator.CodeGeneratorMaps;
 import org.spl.common.Nonterminal;
 import org.spl.common.PredefinedFunctions;
 import org.spl.common.Symbol;
 import org.spl.common.Token;
-import org.spl.common.structure.BindingObject;
-import org.spl.common.structure.FunctionObject;
-import org.spl.common.structure.ScopeObject;
-import org.spl.common.structure.VariableObject;
+import org.spl.common.structure.*;
 import org.spl.common.type.Type;
 
 import org.spl.common.ASTNode;
@@ -20,68 +18,89 @@ import java.util.Stack;
 
 public class Binder {
 
-    private Stack<ScopeObject> m_stack;
+    private Stack<Scope> m_stack;
 
     public Binder() {
-        m_stack = new Stack<ScopeObject>();
+        m_stack = new Stack<Scope>();
     }
 
-    private VariableObject parseVariableDeclaration(ASTNode parent)
+    private VariableDeclaration parseFunctionArgument(ASTNode node, Scope scope)
             throws IncorrectTypeDeclarationException {
-        Symbol parentSymbol = parent.getSymbol();
+        Symbol nodeSymbol = node.getSymbol();
 
-        if (parentSymbol != Nonterminal.GlobalVarDecl &&
-                parentSymbol != Nonterminal.DeclSingleArg &&
-                parentSymbol != Nonterminal.VarDecl) {
+        if (nodeSymbol != Nonterminal.DeclSingleArg) {
             throw new RuntimeException();
         }
 
-        ASTNode typeNode = (ASTNode) parent.getChildAt(0);
-        ASTNode identifierNode = (ASTNode) parent.getChildAt(1);
+        ASTNode typeNode = (ASTNode) node.getChildAt(0);
+        ASTNode identifierNode = (ASTNode) node.getChildAt(1);
 
         Type type = TypeFactory.buildForDeclaration(typeNode);
-        VariableObject variableObject = new VariableObject(type, identifierNode.getString());
-        variableObject.setNode(identifierNode);
-
         identifierNode.setType(type);
 
-        return variableObject;
+        VariableDeclaration variableDeclaration = new VariableDeclaration(type, identifierNode.getString(), false);
+        variableDeclaration.setNode(identifierNode);
+
+        return variableDeclaration;
     }
 
-    private FunctionObject parseFunctionDeclaration(ASTNode parent, ScopeObject globalScopeObject)
-            throws MultipleDeclarationException, IncorrectTypeDeclarationException {
-        Symbol parentSymbol = parent.getSymbol();
+    private VariableDeclaration parseVariableDeclaration(ASTNode node, Scope scope, boolean isGlobal)
+            throws IncorrectTypeDeclarationException {
+        Symbol nodeSymbol = node.getSymbol();
 
-        if (parentSymbol != Nonterminal.FuncDecl) {
+        if (nodeSymbol != Nonterminal.GlobalVarDecl && nodeSymbol != Nonterminal.VarDecl) {
             throw new RuntimeException();
         }
 
-        ASTNode typeNode = (ASTNode) parent.getChildAt(0);
-        ASTNode identifierNode = (ASTNode) parent.getChildAt(1);
+        ASTNode typeNode = (ASTNode) node.getChildAt(0);
+        ASTNode identifierNode = (ASTNode) node.getChildAt(1);
 
         Type type = TypeFactory.buildForDeclaration(typeNode);
-        FunctionObject functionObject = new FunctionObject(type, identifierNode.getString(), globalScopeObject, parent);
-        functionObject.setNode(identifierNode);
+        identifierNode.setType(type);
+
+        VariableDeclaration variableDeclaration = new VariableDeclaration(type, identifierNode.getString(), isGlobal);
+        variableDeclaration.setNode(identifierNode);
+
+        return variableDeclaration;
+    }
+
+    private FunctionDeclaration parseFunctionDeclaration(ASTNode node, Scope globalScope)
+            throws MultipleDeclarationException, IncorrectTypeDeclarationException {
+        Symbol nodeSymbol = node.getSymbol();
+
+        if (nodeSymbol != Nonterminal.FuncDecl) {
+            throw new RuntimeException();
+        }
+
+        ASTNode typeNode = (ASTNode) node.getChildAt(0);
+        ASTNode identifierNode = (ASTNode) node.getChildAt(1);
+        ASTNode argsNode = (ASTNode) node.getChildAt(2);
+        ASTNode bodyNode = (ASTNode) node.getChildAt(3);
+
+        Type type = TypeFactory.buildForDeclaration(typeNode);
+        FunctionDeclaration functionDeclaration = new FunctionDeclaration(type, identifierNode.getString(), globalScope, node);
+        functionDeclaration.setNode(identifierNode);
+
+        Scope scope = functionDeclaration.getScopeObject();
 
         // Adds function variables to the scope if applicable
-        ASTNode args = (ASTNode) parent.getChildAt(2);
-        Symbol argsSymbol = args != null ? args.getSymbol() : null;
+        Symbol argsSymbol = argsNode != null ? argsNode.getSymbol() : null;
         if (argsSymbol == Nonterminal.DeclArgs) {
-            for (Enumeration e = args.children(); e.hasMoreElements(); ) {
-                VariableObject argument = parseVariableDeclaration((ASTNode) e.nextElement());
+            for (Enumeration e = argsNode.children(); e.hasMoreElements(); ) {
+                VariableDeclaration argument = parseFunctionArgument((ASTNode) e.nextElement(), functionDeclaration.getScopeObject());
 
-                if (!functionObject.getArguments().contains(argument)) {
-                    functionObject.addArgument(argument);
+                if (!functionDeclaration.getArguments().contains(argument)) {
+                    functionDeclaration.addArgument(argument);
                 } else {
                     throw new MultipleDeclarationException(argument.getIdentifier(), argument.getNode());
                 }
             }
         }
 
-        return functionObject;
+        return functionDeclaration;
     }
 
-    private void processFunctions(ASTNode node)
+    private void processScopes(ASTNode node, Scope scope)
             throws MultipleDeclarationException, UndeclaredUseException, IncorrectTypeDeclarationException {
         Symbol nodeSymbol = node.getSymbol();
         Token nodeToken = node.getToken();
@@ -96,7 +115,7 @@ public class Binder {
         // 3. Binds variable/function uses
         // 4. Sets return statement node to the scope
         if (nodeSymbol == Nonterminal.Body) {
-            ScopeObject scopeObject;
+            Scope newScope;
 
             // 1. Parses function declaration
             // 2. Parses else statement
@@ -105,33 +124,33 @@ public class Binder {
                 ASTNode identifier = (ASTNode) parent.getChildAt(1);
 
                 if (identifier != null) {
-                    FunctionObject functionObject = (FunctionObject) m_stack.peek().findByIdentifier(identifier.getString());
-                    scopeObject = functionObject.getScopeObject();
+                    FunctionDeclaration functionDeclaration = (FunctionDeclaration) m_stack.peek().findByIdentifier(identifier.getString());
+                    newScope = functionDeclaration.getScopeObject();
                 } else {
                     throw new RuntimeException();
                 }
             } else if (parentSymbol == Nonterminal.ElseStmt) {
                 try {
                     ASTNode ifBody = (ASTNode) parent.getPreviousSibling();
-                    scopeObject = new ScopeObject(ifBody.getScopeObject(), (Nonterminal) parentSymbol);
+                    newScope = new Scope(ifBody.getScopeObject(), (Nonterminal) parentSymbol);
                 } catch (ClassCastException e) {
                     throw new RuntimeException();
                 }
             } else {
                 try {
-                    scopeObject = new ScopeObject(m_stack.peek(), (Nonterminal) parentSymbol);
+                    newScope = new Scope(m_stack.peek(), (Nonterminal) parentSymbol);
                 } catch (ClassCastException e) {
                     throw new RuntimeException();
                 }
             }
 
-            m_stack.push(scopeObject);
+            m_stack.push(newScope);
         } else if (nodeSymbol == Nonterminal.VarDecl) {
-            ScopeObject scopeObject = m_stack.peek();
-            VariableObject declaration = parseVariableDeclaration(node);
+            Scope newScope = m_stack.peek();
+            VariableDeclaration declaration = parseVariableDeclaration(node, newScope, false);
 
             // Adds declaration to scope object
-            if (!scopeObject.addDeclaration(declaration)) {
+            if (!newScope.addDeclaration(declaration)) {
                 throw new MultipleDeclarationException(declaration.getIdentifier(), declaration.getNode());
             }
         } else if (nodeToken == Token.IDENTIFIER &&
@@ -140,23 +159,23 @@ public class Binder {
                 parentSymbol != Nonterminal.DeclSingleArg &&
                 parentSymbol != Nonterminal.VarDecl &&
                 parentSymbol != Nonterminal.TupleType) {
-            BindingObject bindingObject = m_stack.peek().findByIdentifier(nodeString);
+            StructureObject structureObject = m_stack.peek().findByIdentifier(nodeString);
 
-            if (bindingObject != null) {
-                node.setType(bindingObject.getType());
+            if (structureObject != null) {
+                node.setType(structureObject.getType());
             } else {
                 throw new UndeclaredUseException(nodeString, node);
             }
         } else if (nodeSymbol == Nonterminal.ReturnStmt) {
-            ScopeObject scopeObject = m_stack.peek();
-            if (!scopeObject.containsReturnStatement()) {
-                scopeObject.setReturnStatementNode(node);
+            Scope newScope = m_stack.peek();
+            if (!newScope.containsReturnStatement()) {
+                newScope.setReturnStatementNode(node);
             }
         }
 
         // Iterates over children
         for (Enumeration e = node.children(); e.hasMoreElements(); ) {
-            processFunctions((ASTNode) e.nextElement());
+            processScopes((ASTNode) e.nextElement(), m_stack.peek());
         }
 
         // Sets scope object to the current node
@@ -177,8 +196,8 @@ public class Binder {
         }
 
         // Creates a global scope with predefined functions included
-        ScopeObject globalScopeObject = new ScopeObject(PredefinedFunctions.all());
-        root.setScopeObject(globalScopeObject);
+        Scope globalScope = new Scope(PredefinedFunctions.all());
+        root.setScopeObject(globalScope);
 
         // Iterates over children
         for (Enumeration e = root.children(); e.hasMoreElements(); ) {
@@ -186,27 +205,34 @@ public class Binder {
             Symbol childSymbol = child.getSymbol();
 
             if (childSymbol == Nonterminal.GlobalVarDecl) {
-                VariableObject variableObject = parseVariableDeclaration(child);
+                VariableDeclaration variableDeclaration = parseVariableDeclaration(child, globalScope, true);
+//                globalScope.addStructure(variableDeclaration);
 
-                if (!globalScopeObject.addDeclaration(variableObject)) {
-                    throw new MultipleDeclarationException(variableObject.getIdentifier(), variableObject.getNode());
+                if (!globalScope.addDeclaration(variableDeclaration)) {
+                    throw new MultipleDeclarationException(variableDeclaration.getIdentifier(), variableDeclaration.getNode());
                 }
             } else if (childSymbol == Nonterminal.FuncDecl) {
-                FunctionObject functionObject = parseFunctionDeclaration(child, globalScopeObject);
+                FunctionDeclaration functionDeclaration = parseFunctionDeclaration(child, globalScope);
+//                globalScope.addStructure(functionDeclaration);
 
-                if (!globalScopeObject.addDeclaration(functionObject)) {
-                    throw new MultipleDeclarationException(functionObject.getIdentifier(), functionObject.getNode());
+                if (!globalScope.addDeclaration(functionDeclaration)) {
+                    throw new MultipleDeclarationException(functionDeclaration.getIdentifier(), functionDeclaration.getNode());
                 }
             }
         }
 
         // Pushes global scope object to the stack
-        m_stack.push(globalScopeObject);
+        m_stack.push(globalScope);
     }
 
-    public void run(ASTNode root)
+    public Scope run(ASTNode root)
             throws MultipleDeclarationException, UndeclaredUseException, IncorrectTypeDeclarationException {
         processGlobal(root);
-        processFunctions(root);
+        processScopes(root, m_stack.peek());
+
+        IRBuilder irBuilder = new IRBuilder();
+        irBuilder.run(root);
+
+        return m_stack.peek();
     }
 }

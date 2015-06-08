@@ -1,10 +1,10 @@
 package org.spl.typechecker;
 
 import org.spl.common.ASTNode;
-import org.spl.common.structure.BindingObject;
-import org.spl.common.structure.FunctionCall;
-import org.spl.common.structure.FunctionObject;
-import org.spl.common.structure.ScopeObject;
+import org.spl.common.structure.StructureObject;
+import org.spl.common.FunctionCall;
+import org.spl.common.structure.FunctionDeclaration;
+import org.spl.common.structure.Scope;
 import org.spl.common.type.TupleType;
 import org.spl.binder.*;
 import org.spl.common.Nonterminal;
@@ -60,7 +60,7 @@ public class TypeChecker {
 
     private void processFunctionCall(ASTNode call)
             throws IncorrectTypeException, IncorrectReturnTypeException, IncorrectFunctionCallArguments {
-        ScopeObject callScopeObject = call.getScopeObject();
+        Scope callScope = call.getScopeObject();
 
         ASTNode identifier = (ASTNode) call.getFirstChild();
         Type identifierType = identifier.getType();
@@ -84,16 +84,16 @@ public class TypeChecker {
 //        System.out.println("@ " + identifierString + "(" + callArgumentTypeList.toString().substring(1, callArgumentTypeList.toString().length() - 1) + ") " + identifier.getLineNumber() + ":" + identifier.getColumnNumber());
 
         FunctionCall functionCall = new FunctionCall(identifierString, callArgumentTypeList);
-        FunctionObject functionObject = callScopeObject.match(functionCall);
+        FunctionDeclaration functionDeclaration = callScope.match(functionCall);
 
-        if (functionObject == null) {
+        if (functionDeclaration == null) {
             throw new IncorrectFunctionCallArguments(identifier.getString(), identifier);
-        } else if (functionObject.isPolymorphic() && !functionCall.containsPolymorphicTypes()) {
+        } else if (functionDeclaration.isPolymorphic() && !functionCall.containsPolymorphicTypes()) {
 //            System.out.print("# " + identifierString + ": ");
 //            HashMap<String, Type> polymorphicMap = functionObject.getArgumentTypeMap(functionCall);
 //            System.out.println(polymorphicMap);
             try {
-                Type returnType = m_typeCheckerPolymorphic.run(functionObject, functionCall);
+                Type returnType = m_typeCheckerPolymorphic.run(functionDeclaration, functionCall);
                 call.setTempType(returnType);
 //                System.out.println("# " + returnType);
             } catch (EmptyException e) {
@@ -106,7 +106,7 @@ public class TypeChecker {
 
     private void checkUnaryOperator(ASTNode operator) throws IncorrectTypeException {
         String operatorString = operator.getString();
-        ScopeObject operatorScopeObject = operator.getScopeObject();
+        Scope operatorScope = operator.getScopeObject();
 
         ASTNode argument = (ASTNode) operator.getNextSibling();
         Type argumentType = argument.getType();
@@ -116,11 +116,11 @@ public class TypeChecker {
         operatorArgumentList.add(argumentTempType != null ? argumentTempType : argumentType);
 
 //        System.out.println(operatorString + " " + argumentType);
-        FunctionObject functionObject = operatorScopeObject.match(new FunctionCall(operatorString, operatorArgumentList));
-        if (functionObject != null) {
+        FunctionDeclaration functionDeclaration = operatorScope.match(new FunctionCall(operatorString, operatorArgumentList));
+        if (functionDeclaration != null) {
             ASTNode parent = (ASTNode) operator.getParent();
 
-            parent.setType(functionObject.getType());
+            parent.setType(functionDeclaration.getType());
         } else {
             throw new IncorrectTypeException(operator);
         }
@@ -130,7 +130,7 @@ public class TypeChecker {
             throws IncorrectTypeException, IncorrectReturnTypeException, IncorrectFunctionCallArguments {
         Token operatorToken = operator.getToken();
         String operatorString = operator.getString();
-        ScopeObject operatorScopeObject = operator.getScopeObject();
+        Scope operatorScope = operator.getScopeObject();
 
         ASTNode leftArgument = (ASTNode) operator.getPreviousSibling();
         Type leftArgumentType = leftArgument.getType();
@@ -148,23 +148,23 @@ public class TypeChecker {
 
 //        System.out.println("@ " + operatorString + "(" + operatorArgumentList.get(0) + ", " + operatorArgumentList.get(1) + ") " + operator.getLineNumber() + ":" + operator.getColumnNumber());
         FunctionCall functionCall = new FunctionCall(operatorString, operatorArgumentList);
-        FunctionObject functionObject = operatorScopeObject.match(functionCall);
+        FunctionDeclaration functionDeclaration = operatorScope.match(functionCall);
 
-        if (functionObject != null) {
+        if (functionDeclaration != null) {
             ASTNode parent = (ASTNode) operator.getParent();
 
-//            System.out.println(functionObject.isPolymorphic() + " " + functionCall.containsPolymorphicTypes());
-            /*if (!functionObject.isPolymorphic()) {
+//            System.out.println(functionObject.containsPolymorphicTypes() + " " + functionCall.containsPolymorphicTypes());
+            /*if (!functionObject.containsPolymorphicTypes()) {
                 parent.setType(functionObject.getType());
             } else */
-            if (functionObject.isPolymorphic() && !functionCall.containsPolymorphicTypes()) {
+            if (functionDeclaration.isPolymorphic() && !functionCall.containsPolymorphicTypes()) {
 //                System.out.println(operator.getLineNumber() + " " + operator.getColumnNumber());
 //                HashMap<String, Type> polymorphicMap = functionObject.getArgumentTypeMap(functionCall);
 //                System.out.print("# <" + operatorString + ">: ");
 //                System.out.println(polymorphicMap + "\n");
 //                System.out.println("- " + functionCall);
                 try {
-                    Type returnType = m_typeCheckerPolymorphic.run(functionObject, functionCall);
+                    Type returnType = m_typeCheckerPolymorphic.run(functionDeclaration, functionCall);
                     parent.setTempType(returnType);
                 } catch (EmptyException e) {
                     throw new IncorrectTypeException(operator);
@@ -176,7 +176,7 @@ public class TypeChecker {
             }
 
             parent
-                    .setType(functionObject.getType())
+                    .setType(functionDeclaration.getType())
                     .setLineNumber(operator.getLineNumber())
                     .setColumnNumber(operator.getColumnNumber());
         } /*else if (operatorToken == Token.OPERATOR_ASSIGN && operatorArgumentList.get(0).unify(operatorArgumentList.get(1))) {
@@ -190,7 +190,7 @@ public class TypeChecker {
 
     private void checkGetter(ASTNode getter)
             throws IncorrectTypeException, IncorrectReturnTypeException, IncorrectFunctionCallArguments {
-        ScopeObject getterScopeObject = getter.getScopeObject();
+        Scope getterScope = getter.getScopeObject();
         String getterString = getter.getString();
 
         ASTNode argument = (ASTNode) getter.getPreviousSibling();
@@ -202,14 +202,13 @@ public class TypeChecker {
 
 //        System.out.println("@ " + getterString + "(" + getterArgumentList.get(0) + ")");
         FunctionCall functionCall = new FunctionCall(getterString, getterArgumentList);
-        FunctionObject functionObject = getterScopeObject.match(functionCall);
-        if (functionObject != null) {
+        FunctionDeclaration functionDeclaration = getterScope.match(functionCall);
+        if (functionDeclaration != null) {
             ASTNode expression = (ASTNode) getter.getParent();
 
             if (!functionCall.containsPolymorphicTypes()) {
-//                System.out.println("- " + functionCall);
                 try {
-                    Type returnType = m_typeCheckerPolymorphic.run(functionObject, functionCall);
+                    Type returnType = m_typeCheckerPolymorphic.run(functionDeclaration, functionCall);
                     getter.setTempType(returnType);
                     expression.setTempType(returnType);
                 } catch (EmptyException e) {
@@ -217,9 +216,9 @@ public class TypeChecker {
                 }
             }
 
-            getter.setType(functionObject.getType());
+            getter.setType(functionDeclaration.getType());
             expression
-                    .setType(functionObject.getType())
+                    .setType(functionDeclaration.getType())
                     .setLineNumber(getter.getLineNumber())
                     .setColumnNumber(getter.getColumnNumber());
         } else {
@@ -232,13 +231,13 @@ public class TypeChecker {
         ASTNode child = (ASTNode) returnStmt.getChildAt(1);
         Type childType = child != null ? child.getType() : null;
 
-        FunctionObject functionObject = ((ScopeObject) returnStmt.getScopeObject()).getFunctionObject();
+        FunctionDeclaration functionDeclaration = ((Scope) returnStmt.getScopeObject()).getFunctionObject();
 
-        if (childType == null || !childType.unify(functionObject.getType())) {
-            if (!functionObject.isVoid()) {
-                throw new IncorrectReturnTypeException(functionObject.getIdentifier(), child);
+        if (childType == null || !childType.unify(functionDeclaration.getType())) {
+            if (!functionDeclaration.isVoid()) {
+                throw new IncorrectReturnTypeException(functionDeclaration.getIdentifier(), child);
             } else {
-                throw new ExcessReturnStatement(functionObject.getIdentifier(), child);
+                throw new ExcessReturnStatement(functionDeclaration.getIdentifier(), child);
             }
         }
 
@@ -288,10 +287,10 @@ public class TypeChecker {
         if (TypeCheckerMaps.literalList.contains(nodeToken)) {
             node.setType(TypeFactory.buildForLiteral(nodeToken));
         } else if (nodeToken == Token.IDENTIFIER) {
-            BindingObject bindingObject = node.getScopeObject().findByIdentifier(node.getString());
+            StructureObject structureObject = node.getScopeObject().findByIdentifier(node.getString());
 
-            if (bindingObject != null) {
-                node.setType(bindingObject.getType());
+            if (structureObject != null) {
+                node.setType(structureObject.getType());
             }
         }
     }

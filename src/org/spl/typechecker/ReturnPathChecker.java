@@ -1,31 +1,31 @@
 package org.spl.typechecker;
 
 import org.spl.common.Nonterminal;
-import org.spl.common.structure.FunctionObject;
-import org.spl.common.structure.ScopeObject;
+import org.spl.common.structure.FunctionDeclaration;
+import org.spl.common.structure.Scope;
 import org.spl.typechecker.exception.MissingReturnStatement;
 
 public class ReturnPathChecker {
 
-    private boolean processFunction(ScopeObject scopeObject) {
-        FunctionObject functionObject = scopeObject.getFunctionObject();
-        if (functionObject != null && functionObject.isPredefined()) {
+    private boolean processFunction(Scope scope) {
+        FunctionDeclaration functionDeclaration = scope.getFunctionObject();
+        if (functionDeclaration != null && functionDeclaration.isPredefined()) {
             return true;
         }
 
-        if (scopeObject.containsReturnStatement()) {
+        if (scope.containsReturnStatement()) {
             return true;
         }
 
         boolean scopeState = false;
 
         // Iterates over scope's children
-        for (ScopeObject child : scopeObject.getChildren()) {
+        for (Scope child : scope.getChildren()) {
             if (child.getNonterminal() == Nonterminal.IfStmt) {
                 int grandChildrenSize = child.getChildren().size();
 
                 if (grandChildrenSize > 0) {
-                    ScopeObject lastGrandChild = child.getChildren().get(grandChildrenSize - 1);
+                    Scope lastGrandChild = child.getChildren().get(grandChildrenSize - 1);
 
                     if (lastGrandChild.getNonterminal() == Nonterminal.ElseStmt) {
                         scopeState = scopeState || (processFunction(child) && processFunction(lastGrandChild));
@@ -37,21 +37,21 @@ public class ReturnPathChecker {
         return scopeState;
     }
 
-    private void process(ScopeObject scopeObject) throws MissingReturnStatement {
+    private void process(Scope scope) throws MissingReturnStatement {
         // Iterates over scope's children
-        for (ScopeObject child : scopeObject.getChildren()) {
+        for (Scope child : scope.getChildren()) {
             if (child.getNonterminal() == Nonterminal.FuncDecl) {
-                FunctionObject childFunctionObject = child.getFunctionObject();
+                FunctionDeclaration childFunctionDeclaration = child.getFunctionObject();
 
-                if (!processFunction(child) && !childFunctionObject.isVoid()) {
-                    throw new MissingReturnStatement(childFunctionObject.getIdentifier(),
-                            childFunctionObject.getDeclarationNode());
+                if (!processFunction(child) && !childFunctionDeclaration.isVoid()) {
+                    throw new MissingReturnStatement(childFunctionDeclaration.getIdentifier(),
+                            childFunctionDeclaration.getDeclarationNode());
                 }
             }
         }
     }
 
-    public void run(ScopeObject globalScopeObject) throws MissingReturnStatement {
-        process(globalScopeObject);
+    public void run(Scope globalScope) throws MissingReturnStatement {
+        process(globalScope);
     }
 }

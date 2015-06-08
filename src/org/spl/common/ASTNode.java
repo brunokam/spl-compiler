@@ -1,7 +1,7 @@
 package org.spl.common;
 
 import org.spl.common.type.Type;
-import org.spl.common.structure.ScopeObject;
+import org.spl.common.structure.Scope;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -12,7 +12,7 @@ public class ASTNode extends DefaultMutableTreeNode {
     private String m_string;
     private Type m_type;
     private Type m_tempType;
-    private ScopeObject m_scopeObject;
+    private Scope m_scope;
     private int m_lineNumber;
     private int m_columnNumber;
 
@@ -26,7 +26,7 @@ public class ASTNode extends DefaultMutableTreeNode {
         m_string = null;
         m_type = null;
         m_tempType = null;
-        m_scopeObject = null;
+        m_scope = null;
     }
 
     public ASTNode(Symbol symbol, String string) {
@@ -35,7 +35,7 @@ public class ASTNode extends DefaultMutableTreeNode {
         m_string = string;
         m_type = null;
         m_tempType = null;
-        m_scopeObject = null;
+        m_scope = null;
     }
 
     public ASTNode(Symbol symbol, Token token, String string, int lineNumber, int columnNumber) {
@@ -44,7 +44,7 @@ public class ASTNode extends DefaultMutableTreeNode {
         m_string = string;
         m_type = null;
         m_tempType = null;
-        m_scopeObject = null;
+        m_scope = null;
         m_lineNumber = lineNumber;
         m_columnNumber = columnNumber;
     }
@@ -69,8 +69,8 @@ public class ASTNode extends DefaultMutableTreeNode {
         return m_tempType;
     }
 
-    public ScopeObject getScopeObject() {
-        return m_scopeObject;
+    public Scope getScopeObject() {
+        return m_scope;
     }
 
     public int getLineNumber() {
@@ -106,8 +106,8 @@ public class ASTNode extends DefaultMutableTreeNode {
         return this;
     }
 
-    public ASTNode setScopeObject(ScopeObject scopeObject) {
-        m_scopeObject = scopeObject;
+    public ASTNode setScopeObject(Scope scope) {
+        m_scope = scope;
         return this;
     }
 
