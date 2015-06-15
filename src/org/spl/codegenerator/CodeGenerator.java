@@ -18,20 +18,28 @@ public class CodeGenerator {
 
         for (StructureObject structureObject : scope.getStructures()) {
             if (structureObject instanceof VariableDeclaration) {
-                structureObject.generateCode(context);
+                structureObject.generate(context);
             }
         }
 
-        context.addInstruction(new String[]{BRANCH, "main"});
+        context.addInstruction(new String[]{BRANCH, "f_main"});
 
         for (StructureObject structureObject : scope.getStructures()) {
             if (structureObject instanceof FunctionDeclaration) {
-                structureObject.generateCode(context);
+                structureObject.generate(context);
             }
         }
 
         context.addInstruction(new String[]{HALT});
-        scope.generateGarbageCollectorFunction(context);
+        scope.generateVariableInitialiser(context);
+        scope.generateValueGetter(context);
+        scope.generateVariableUtiliser(context);
+        scope.generateBasicVariableUtiliser(context);
+        scope.generateTupleUtiliser(context);
+        scope.generateListUtiliser(context);
+        scope.generateListElementUtiliser(context);
+        scope.generatePrint(context);
+        scope.generateGarbageCollector(context);
 
         return context.getInstructions();
     }

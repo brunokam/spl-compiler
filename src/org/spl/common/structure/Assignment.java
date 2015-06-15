@@ -22,19 +22,19 @@ public class Assignment extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         String addressPosition = context.getAddressPosition(m_variableDeclaration).toString();
         Type type = m_variableDeclaration.getType();
         String addressSize = type.getAddressSize().toString();
         String bodySize = type.getBodySize().toString();
 
-        m_expression.generateCode(context);
+        m_expression.generate(context);
 
         if (context.containsLocal(m_variableDeclaration) || context.containsArgument(m_variableDeclaration)) {
             // If the expression is reference (=> the expression is a variable)
             if (m_expression.isReference()) {
-                Variable referenceVariable = (Variable) m_expression;
-                VariableDeclaration referenceDeclaration = referenceVariable.getDeclaration();
+                VariableUse referenceVariableUse = (VariableUse) m_expression;
+                VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
 
 //                deleteReference(context, m_variableDeclaration);
 //                addReference(context, referenceDeclaration);
@@ -64,8 +64,8 @@ public class Assignment extends StructureObject {
 
             // If the expression is reference (=> the expression is a variable)
             if (m_expression.isReference()) {
-                Variable referenceVariable = (Variable) m_expression;
-                VariableDeclaration referenceDeclaration = referenceVariable.getDeclaration();
+                VariableUse referenceVariableUse = (VariableUse) m_expression;
+                VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
 
 //                deleteReference(context, m_variableDeclaration);
 //                addReference(context, referenceDeclaration);

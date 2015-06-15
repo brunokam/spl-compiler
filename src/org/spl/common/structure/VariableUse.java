@@ -2,12 +2,23 @@ package org.spl.common.structure;
 
 import org.spl.common.type.Type;
 
-public class Variable extends Expression {
+import java.util.ArrayList;
+
+public class VariableUse extends Expression {
 
     private VariableDeclaration m_declaration;
 
-    public Variable(VariableDeclaration declaration) {
+    public VariableUse(VariableDeclaration declaration) {
         super();
+        m_declaration = declaration;
+    }
+
+    public VariableUse(Expression expression, VariableDeclaration declaration) {
+        super();
+        m_node = expression.m_node;
+        m_token = expression.m_token;
+        m_expressions = new ArrayList<Expression>(expression.m_expressions);
+        m_forcedAdjustment = expression.m_forcedAdjustment;
         m_declaration = declaration;
     }
 
@@ -31,17 +42,14 @@ public class Variable extends Expression {
     }
 
     @Override
-    public void generateCode(Context context) {
-        Type type = m_declaration.getType();
-        String variableSize = type.getBodySize().toString();
+    public void generate(Context context) {
         String addressPosition = context.getAddressPosition(m_declaration).toString();
-        String addressSize = type.getAddressSize().toString();
 
         if (context.containsLocal(m_declaration) || context.containsArgument(m_declaration)) {
-            context.addInstruction(new String[]{LOAD_MULTIPLE_LOCAL, addressPosition, addressSize});
+            context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
         } else if (context.containsGlobal(m_declaration)) {
             context.addInstruction(new String[]{LOAD_REGISTER, "R5"});
-            context.addInstruction(new String[]{LOAD_MULTIPLE_VIA_ADDRESS, addressPosition, addressSize});
+            context.addInstruction(new String[]{LOAD_VIA_ADDRESS, addressPosition});
         } else {
             throw new RuntimeException();
         }
@@ -49,6 +57,6 @@ public class Variable extends Expression {
 
     @Override
     public String toString() {
-        return "VARIABLE " + m_declaration.getIdentifier();
+        return "VARIABLE_USE " + m_declaration.getIdentifier();
     }
 }

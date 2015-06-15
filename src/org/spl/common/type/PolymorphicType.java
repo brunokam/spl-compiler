@@ -40,6 +40,10 @@ public class PolymorphicType extends Type {
 
     @Override
     public boolean unify(Type type) {
+        if (type.unify(new BasicType("Void"))) {
+            return false;
+        }
+
         return true;
     }
 

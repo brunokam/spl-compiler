@@ -18,15 +18,15 @@ public class WhileStatement extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         Integer statementCounter = context.getStatementCounter();
 
         context.addInstruction(new String[]{"while" + statementCounter + ":", NO_OPERATION});
-        m_conditionalExpression.generateCode(context);
+        m_conditionalExpression.generate(context);
         context.addInstruction(new String[]{BRANCH_ON_FALSE, "end_while" + statementCounter});
 
         for (StructureObject structureObject : m_scope.getStructures()) {
-            structureObject.generateCode(context);
+            structureObject.generate(context);
         }
 
         context.addInstruction(new String[]{BRANCH, "while" + statementCounter});

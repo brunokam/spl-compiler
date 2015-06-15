@@ -194,7 +194,7 @@ public class Scope extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
     }
 
     @Override

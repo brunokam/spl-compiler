@@ -28,21 +28,21 @@ public class IfStatement extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         Integer statementCounter = context.getStatementCounter();
 
-        m_conditionalExpression.generateCode(context);
+        m_conditionalExpression.generate(context);
         context.addInstruction(new String[]{BRANCH_ON_FALSE, hasElseStatement() ? "else" + statementCounter : "end_if" + statementCounter});
 
         for (StructureObject structureObject : m_scope.getStructures()) {
-            structureObject.generateCode(context);
+            structureObject.generate(context);
         }
 
         context.addInstruction(new String[]{BRANCH, "end_if" + statementCounter});
 
         if (hasElseStatement()) {
             context.addInstruction(new String[]{"else" + statementCounter + ":", NO_OPERATION});
-            m_elseStatement.generateCode(context);
+            m_elseStatement.generate(context);
         }
 
         context.addInstruction(new String[]{"end_if" + statementCounter + ":", NO_OPERATION});

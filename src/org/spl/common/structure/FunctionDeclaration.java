@@ -152,54 +152,52 @@ public class FunctionDeclaration extends StructureObject {
         return result;
     }
 
-    private Integer clearReferences(Context context) {
-        Integer adjustment = 0;
+    private void generateReturnSubroutine(Context context) {
+        context.addInstruction(new String[]{"return_from_" + m_identifier + ":"});
 
-//        context.addInstruction(new String[]{"ret" + m_scope.getId().toString() + ":"});
-//        saveHeapPointer(context);
+        saveHeapPointer(context);
+
+        Integer additionalAdjustment = 0;
 
         for (StructureObject structureObject : m_scope.getStructures()) {
             if (structureObject instanceof VariableDeclaration) {
                 VariableDeclaration declaration = (VariableDeclaration) structureObject;
+                Type type = declaration.getType();
                 String addressPosition = context.getAddressPosition(declaration).toString();
-                String offset = declaration.getType().getBodySize().toString();
 
-//                context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
-//                context.addInstruction(new String[]{LOAD_CONSTANT, offset});
-//                context.addInstruction(new String[]{SUBTRACT});
-//                context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-//                context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
-//                context.addInstruction(new String[]{STORE_ON_HEAP});
+                context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
 
-                --adjustment;
+                if (type.isBasicType()) {
+                    context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_basic_variable"});
+                } else if (type.isTupleType()) {
+                    context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_tuple"});
+                } else if (type.isListType()) {
+                    context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_list"});
+                }
+
+                ++additionalAdjustment;
             }
         }
 
-        for (VariableDeclaration argument : m_argumentList) {
-            String addressPosition = context.getAddressPosition(argument).toString();
-            String offset = argument.getType().getBodySize().toString();
+        restoreHeapPointer(context);
 
-//            context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
-//            context.addInstruction(new String[]{LOAD_FROM_HEAP, "-" + offset});
-//            context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
-//            context.addInstruction(new String[]{LOAD_CONSTANT, offset});
-//            context.addInstruction(new String[]{SUBTRACT});
-//            context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-//            context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
-//            context.addInstruction(new String[]{SUBTRACT});
-//            context.addInstruction(new String[]{STORE_ON_HEAP});
+        generateAdjustmentCode(context, additionalAdjustment);
 
-            --adjustment;
+        context.addInstruction(new String[]{STORE_REGISTER, "MP"});
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    private void generateAdjustmentCode(Context context, Integer additionalAdjustment) {
+        Integer adjustment = -(additionalAdjustment + context.getLocalEnvironmentLength());
+
+        if (adjustment < 0) {
+            context.addInstruction(new String[]{ADJUST, adjustment.toString()});
         }
-
-//        restoreHeapPointer(context);
-
-        return adjustment;
     }
 
     @Override
-    public void generateCode(Context context) {
-        context.addInstruction(new String[]{m_identifier + ":"});
+    public void generate(Context context) {
+        context.addInstruction(new String[]{"f_" + m_identifier + ":"});
         context.addInstruction(new String[]{LOAD_REGISTER, "MP"});
         context.addInstruction(new String[]{LOAD_STACK_ADDRESS, "0"});
         context.addInstruction(new String[]{STORE_REGISTER, "MP"});
@@ -209,18 +207,18 @@ public class FunctionDeclaration extends StructureObject {
         }
 
         for (StructureObject structureObject : m_scope.getStructures()) {
-            structureObject.generateCode(context);
+            structureObject.generate(context);
         }
 
-        Integer adjustment = clearReferences(context);
-
-        adjustment -= context.getLocalEnvironmentLength();
-
-        context.addInstruction(new String[]{ADJUST, adjustment.toString()});
-        context.addInstruction(new String[]{STORE_REGISTER, "MP"});
-
         if (!m_identifier.equals("main")) {
-            context.addInstruction(new String[]{RETURN});
+            if (isVoid()) {
+                context.addInstruction(new String[]{BRANCH, "return_from_" + m_identifier});
+            }
+
+            generateReturnSubroutine(context);
+        } else {
+            generateAdjustmentCode(context, 0);
+            context.addInstruction(new String[]{STORE_REGISTER, "MP"});
         }
 
         context.clearLocal();

@@ -23,7 +23,7 @@ public class BasicConstant extends Expression {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         Token nodeToken = m_valueNode.getToken();
 
         if (nodeToken == Token.NUMERIC) {

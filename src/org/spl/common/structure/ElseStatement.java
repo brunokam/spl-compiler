@@ -16,9 +16,9 @@ public class ElseStatement extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         for (StructureObject structureObject : m_scope.getStructures()) {
-            structureObject.generateCode(context);
+            structureObject.generate(context);
         }
     }
 

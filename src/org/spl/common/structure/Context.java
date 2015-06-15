@@ -88,13 +88,7 @@ public class Context {
     }
 
     public Integer getLocalEnvironmentLength() {
-        Integer length = 0;
-
-        for (VariableDeclaration variableDeclaration : m_localVariables) {
-            length += variableDeclaration.getType().getAddressSize();
-        }
-
-        return length;
+        return m_localVariables.size();
     }
 
     public boolean containsArgument(VariableDeclaration variableDeclaration) {

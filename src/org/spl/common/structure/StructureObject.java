@@ -5,6 +5,8 @@ import org.spl.common.type.Type;
 
 public abstract class StructureObject {
 
+    private final static Integer GARBAGE_COLLECTOR_BOUNDARY = 2256;
+
     protected final static String NO_OPERATION = "nop";
     protected final static String ANNOTE = "annote";
     protected final static String LOAD_VIA_ADDRESS = "lda";
@@ -39,7 +41,10 @@ public abstract class StructureObject {
     protected final static String SUBTRACT = "sub";
     protected final static String SWAP = "swp";
     protected final static String EQ = "eq";
+    protected final static String NE = "ne";
     protected final static String GT = "gt";
+    protected final static String GE = "ge";
+    protected final static String LT = "lt";
 
     protected Type m_type;
     protected String m_identifier;
@@ -72,7 +77,7 @@ public abstract class StructureObject {
         m_node = object;
     }
 
-    public abstract void generateCode(Context context);
+    public abstract void generate(Context context);
 
     protected void saveHeapPointer(Context context) {
         context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
@@ -86,7 +91,6 @@ public abstract class StructureObject {
 
     protected void addReference(Context context, VariableDeclaration declaration) {
         String addressPosition = context.getAddressPosition(declaration).toString();
-        String offset = declaration.getType().getBodySize().toString();
 
         saveHeapPointer(context);
 
@@ -97,7 +101,7 @@ public abstract class StructureObject {
             context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
         }
 
-        context.addInstruction(new String[]{LOAD_FROM_HEAP, "-" + offset});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
         context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
         context.addInstruction(new String[]{ADD});
 
@@ -108,8 +112,6 @@ public abstract class StructureObject {
             context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
         }
 
-        context.addInstruction(new String[]{LOAD_CONSTANT, offset});
-        context.addInstruction(new String[]{SUBTRACT});
         context.addInstruction(new String[]{STORE_REGISTER, "HP"});
         context.addInstruction(new String[]{STORE_ON_HEAP});
 
@@ -120,7 +122,6 @@ public abstract class StructureObject {
 
     protected void deleteReference(Context context, VariableDeclaration declaration) {
         String addressPosition = context.getAddressPosition(declaration).toString();
-        String offset = declaration.getType().getBodySize().toString();
 
         saveHeapPointer(context);
 
@@ -131,7 +132,7 @@ public abstract class StructureObject {
             context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
         }
 
-        context.addInstruction(new String[]{LOAD_FROM_HEAP, "-" + offset});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
         context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
         context.addInstruction(new String[]{SUBTRACT});
 
@@ -142,8 +143,6 @@ public abstract class StructureObject {
             context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
         }
 
-        context.addInstruction(new String[]{LOAD_CONSTANT, offset});
-        context.addInstruction(new String[]{SUBTRACT});
         context.addInstruction(new String[]{STORE_REGISTER, "HP"});
         context.addInstruction(new String[]{STORE_ON_HEAP});
 
@@ -152,55 +151,410 @@ public abstract class StructureObject {
         context.addInstruction(new String[]{ADJUST, "-1"});
     }
 
-    public void generateListCollector(Context context, VariableDeclaration declaration) {
-        String identifier = declaration.getIdentifier();
+    public void generateGarbageCollector(Context context) {
+        context.addInstruction(new String[]{"collect_garbage:", NO_OPERATION});
 
-        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        saveHeapPointer(context);
+
+        // Stores initial previous heap pointer reference
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
         context.addInstruction(new String[]{STORE_REGISTER, "R7"});
-        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
-        context.addInstruction(new String[]{LOAD_FROM_HEAP, "-1"});
-        context.addInstruction(new String[]{"stack_loop_" + identifier + ":", NO_OPERATION});
-        context.addInstruction(new String[]{LOAD_REGISTER, "R7"});
-        context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
-        context.addInstruction(new String[]{ADD});
-        context.addInstruction(new String[]{STORE_REGISTER, "R7"});
-        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+
+        // Stores initial heap pointer
+        context.addInstruction(new String[]{LOAD_CONSTANT, "2000"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+
+        // While HP < R6
+        context.addInstruction(new String[]{"gc_while:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_REGISTER, "R6"});
+        context.addInstruction(new String[]{LT});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "gc_end_while"});
+
+        // If reference counter == 0
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
         context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
-        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
         context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
         context.addInstruction(new String[]{EQ});
-        context.addInstruction(new String[]{BRANCH_ON_FALSE, "stack_loop_" + identifier});
-        context.addInstruction(new String[]{"end_stack_loop_" + identifier + ":", NO_OPERATION});
-        context.addInstruction(new String[]{ADJUST, "-1"});
-        context.addInstruction(new String[]{STORE_ON_HEAP});
-        context.addInstruction(new String[]{STORE_ON_HEAP});
-        context.addInstruction(new String[]{"heap_loop_" + identifier + ":", NO_OPERATION});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "gc_else"});
+
         context.addInstruction(new String[]{LOAD_REGISTER, "R7"});
-        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
-        context.addInstruction(new String[]{GT});
-        context.addInstruction(new String[]{BRANCH_ON_FALSE, "heap_loop_" + identifier});
-        context.addInstruction(new String[]{LOAD_REGISTER, "R7"});
-        context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
-        context.addInstruction(new String[]{SUBTRACT});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
         context.addInstruction(new String[]{STORE_REGISTER, "R7"});
-        context.addInstruction(new String[]{"end_heap_loop_" + identifier + ":", NO_OPERATION});
+
+        // Moves HP to the next block
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+        context.addInstruction(new String[]{ADD});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+
+        context.addInstruction(new String[]{BRANCH, "gc_end_if"});
+
+        // Else
+        context.addInstruction(new String[]{"gc_else:", NO_OPERATION});
+
+        // Moves HP to the next block
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "4"});
+        context.addInstruction(new String[]{ADD});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+
+        // End if
+        context.addInstruction(new String[]{"gc_end_if:", NO_OPERATION});
+
+        // Loops
+        context.addInstruction(new String[]{BRANCH, "gc_while"});
+
+        // End while
+        context.addInstruction(new String[]{"gc_end_while:", NO_OPERATION});
+
+//        restoreHeapPointer(context);
+        // Sets heap pointer to point on the free space
+        context.addInstruction(new String[]{LOAD_REGISTER, "R7"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+
+        context.addInstruction(new String[]{RETURN});
     }
 
-    public void generateGarbageCollectorFunction(Context context) {
-        context.addInstruction(new String[]{"garbage_collector:", NO_OPERATION});
+    public void generateValueGetter(Context context) {
+        context.addInstruction(new String[]{"get_value:", NO_OPERATION});
 
-        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{STORE_REGISTER, "RR"});
+
+        // If x is Int
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"}); // Int type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vg_else_if_bool"});
+
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+
+        context.addInstruction(new String[]{BRANCH, "vg_end_if"});
+
+        // Else if x is Bool
+        context.addInstruction(new String[]{"vg_else_if_bool:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"}); // Bool type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vg_else_if_char"});
+
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+
+        context.addInstruction(new String[]{BRANCH, "vg_end_if"});
+
+        // Else if x is Char
+        context.addInstruction(new String[]{"vg_else_if_char:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "2"}); // Char type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vg_else_if_tuple"});
+
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+
+        context.addInstruction(new String[]{BRANCH, "vg_end_if"});
+
+        // Else if x is tuple
+        context.addInstruction(new String[]{"vg_else_if_tuple:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vg_else_if_list"});
+
+        context.addInstruction(new String[]{LOAD_MULTIPLE_FROM_HEAP, "-3", "2"});
+
+        context.addInstruction(new String[]{BRANCH, "vg_end_if"});
+
+        // Else if x is list
+        context.addInstruction(new String[]{"vg_else_if_list:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "0"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "4"});
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vg_end_if"});
+
+        context.addInstruction(new String[]{LOAD_MULTIPLE_FROM_HEAP, "-3", "2"});
+
+        // End if
+        context.addInstruction(new String[]{"vg_end_if:", NO_OPERATION});
+
+        context.addInstruction(new String[]{LOAD_REGISTER, "RR"});
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateVariableInitialiser(Context context) {
+        context.addInstruction(new String[]{"initialise_variable:", NO_OPERATION});
+
+        context.addInstruction(new String[]{STORE_REGISTER, "RR"});
+
+        // Executes garbage collector if needed
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, GARBAGE_COLLECTOR_BOUNDARY.toString()});
+        context.addInstruction(new String[]{GE});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vm_if"});
+
+//        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "collect_garbage"});
+
+        // If value under HP == 0
+        context.addInstruction(new String[]{"vm_if:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
         context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
         context.addInstruction(new String[]{EQ});
-        context.addInstruction(new String[]{BRANCH_ON_TRUE, "garbage_collector_return"});
-        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_ON_TRUE, "vm_else"});
 
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
+        context.addInstruction(new String[]{STORE_REGISTER, "R7"});
+
+        // Stores the block
+        context.addInstruction(new String[]{STORE_MULTIPLE_ON_HEAP, "4"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+        context.addInstruction(new String[]{SUBTRACT});
+
+        // Moves HP to the new position
+        context.addInstruction(new String[]{LOAD_REGISTER, "R7"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+
+        context.addInstruction(new String[]{BRANCH, "vm_end_if"});
+
+        // Else
+        context.addInstruction(new String[]{"vm_else:", NO_OPERATION});
+
+        // Stores the block
+        context.addInstruction(new String[]{STORE_MULTIPLE_ON_HEAP, "4"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+        context.addInstruction(new String[]{SUBTRACT});
+
+        // End if
+        context.addInstruction(new String[]{"vm_end_if:", NO_OPERATION});
+
+        context.addInstruction(new String[]{LOAD_REGISTER, "RR"});
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateVariableUtiliser(Context context) {
+        context.addInstruction(new String[]{"utilise_variable:", NO_OPERATION});
+
+        // If x is basic Int
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"}); // Int type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vu_else_if_bool"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_basic_variable"});
+
+        context.addInstruction(new String[]{BRANCH, "vu_end_if"});
+
+        // Else if x is Bool
+        context.addInstruction(new String[]{"vu_else_if_bool:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"}); // Bool type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vu_else_if_char"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_basic_variable"});
+
+        context.addInstruction(new String[]{BRANCH, "vu_end_if"});
+
+        // Else if x is Char
+        context.addInstruction(new String[]{"vu_else_if_char:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "2"}); // Char type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vu_else_if_tuple"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_basic_variable"});
+
+        context.addInstruction(new String[]{BRANCH, "vu_end_if"});
+
+        // Else if x is tuple
+        context.addInstruction(new String[]{"vu_else_if_tuple:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vu_else_if_list"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_tuple"});
+
+        context.addInstruction(new String[]{BRANCH, "vu_end_if"});
+
+        // Else if x is list
+        context.addInstruction(new String[]{"vu_else_if_list:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "4"});
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vu_end_if"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_list"});
+
+        context.addInstruction(new String[]{BRANCH, "vu_end_if"});
+
+        // Else if x is list element
+        context.addInstruction(new String[]{"vu_else_if_list_elem:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "5"});
+        context.addInstruction(new String[]{EQ});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_list_elem"});
+
+        // End if
+        context.addInstruction(new String[]{"vu_end_if:", NO_OPERATION});
+
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateBasicVariableUtiliser(Context context) {
+        context.addInstruction(new String[]{"utilise_basic_variable:", NO_OPERATION});
+
+        // Sets reference counter to 0
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateTupleUtiliser(Context context) {
+        context.addInstruction(new String[]{"utilise_tuple:", NO_OPERATION});
+
+        // Sets reference counter to 0
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+
+        context.addInstruction(new String[]{LOAD_MULTIPLE_FROM_HEAP, "-3", "2"});
+
+        // Utilises the first element
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_variable"});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        // Utilises the second element
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_variable"});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateListUtiliser(Context context) {
+        context.addInstruction(new String[]{"utilise_list:", NO_OPERATION});
+
+        // Sets reference counter to 0
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+
+        // Utilises the head element
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_list_elem"});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateListElementUtiliser(Context context) {
+        context.addInstruction(new String[]{"utilise_list_elem:", NO_OPERATION});
+
+        // Sets reference counter to 0
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+
+        // If x != 0 (end of a list)
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{NE});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "leu_end_if"});
+
+        // Utilises a value of the element
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "2"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_variable"});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        // Utilises the next element
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "3"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "utilise_list_elem"});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        // End if
+        context.addInstruction(new String[]{"leu_end_if:", NO_OPERATION});
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generatePrint(Context context) {
+        context.addInstruction(new String[]{"print:", NO_OPERATION});
+
+        // If x is basic Int
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"}); // Int type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "pr_else_if_bool"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "get_value"});
         context.addInstruction(new String[]{TRAP, "0"});
 
-        context.addInstruction(new String[]{STORE_ON_STACK, "-1"});
-        context.addInstruction(new String[]{BRANCH, "garbage_collector"});
+        context.addInstruction(new String[]{BRANCH, "pr_end_if"});
 
-        context.addInstruction(new String[]{"garbage_collector_return:", NO_OPERATION});
+        // Else if x is Bool
+        context.addInstruction(new String[]{"pr_else_if_bool:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"}); // Bool type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "pr_else_if_char"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "get_value"});
+        context.addInstruction(new String[]{TRAP, "0"});
+
+        context.addInstruction(new String[]{BRANCH, "pr_end_if"});
+
+        // Else if x is Char
+        context.addInstruction(new String[]{"pr_else_if_char:", NO_OPERATION});
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "1"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "2"}); // Char type identifier
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "pr_end_if"});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "get_value"});
+        context.addInstruction(new String[]{TRAP, "1"});
+
+        context.addInstruction(new String[]{BRANCH, "pr_end_if"});
+
+        // End if
+        context.addInstruction(new String[]{"pr_end_if:", NO_OPERATION});
+
         context.addInstruction(new String[]{RETURN});
     }
 

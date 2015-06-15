@@ -16,7 +16,7 @@ public class IRBuilder {
         m_stack = new Stack<Scope>();
     }
 
-    private WhileStatement parseWhileStatement(ASTNode node, Scope parentScope) {
+    private WhileStatement parseWhileStatement(ASTNode node, Scope parentScope, FunctionDeclaration functionDeclaration) {
         Symbol nodeSymbol = node.getSymbol();
 
         if (nodeSymbol != Nonterminal.WhileStmt) {
@@ -41,18 +41,18 @@ public class IRBuilder {
             } else if (childSymbol == Nonterminal.Stmt) {
                 scope.addStructure(parseStatement(child, scope));
             } else if (childSymbol == Nonterminal.IfStmt) {
-                scope.addStructure(parseIfStatement(child, scope));
+                scope.addStructure(parseIfStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.WhileStmt) {
-                scope.addStructure(parseWhileStatement(child, scope));
+                scope.addStructure(parseWhileStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.ReturnStmt) {
-                scope.addStructure(parseReturnStatement(child, scope));
+                scope.addStructure(parseReturnStatement(child, scope, functionDeclaration));
             }
         }
 
         return whileStatement;
     }
 
-    private ElseStatement parseElseStatement(ASTNode node, Scope parentScope) {
+    private ElseStatement parseElseStatement(ASTNode node, Scope parentScope, FunctionDeclaration functionDeclaration) {
         Symbol nodeSymbol = node.getSymbol();
 
         if (nodeSymbol != Nonterminal.ElseStmt) {
@@ -74,18 +74,18 @@ public class IRBuilder {
             } else if (childSymbol == Nonterminal.Stmt) {
                 scope.addStructure(parseStatement(child, scope));
             } else if (childSymbol == Nonterminal.IfStmt) {
-                scope.addStructure(parseIfStatement(child, scope));
+                scope.addStructure(parseIfStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.WhileStmt) {
-                scope.addStructure(parseWhileStatement(child, scope));
+                scope.addStructure(parseWhileStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.ReturnStmt) {
-                scope.addStructure(parseReturnStatement(child, scope));
+                scope.addStructure(parseReturnStatement(child, scope, functionDeclaration));
             }
         }
 
         return elseStatement;
     }
 
-    private IfStatement parseIfStatement(ASTNode node, Scope parentScope) {
+    private IfStatement parseIfStatement(ASTNode node, Scope parentScope, FunctionDeclaration functionDeclaration) {
         Symbol nodeSymbol = node.getSymbol();
 
         if (nodeSymbol != Nonterminal.IfStmt) {
@@ -111,22 +111,22 @@ public class IRBuilder {
             } else if (childSymbol == Nonterminal.Stmt) {
                 scope.addStructure(parseStatement(child, scope));
             } else if (childSymbol == Nonterminal.IfStmt) {
-                scope.addStructure(parseIfStatement(child, scope));
+                scope.addStructure(parseIfStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.WhileStmt) {
-                scope.addStructure(parseWhileStatement(child, scope));
+                scope.addStructure(parseWhileStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.ReturnStmt) {
-                scope.addStructure(parseReturnStatement(child, scope));
+                scope.addStructure(parseReturnStatement(child, scope, functionDeclaration));
             }
         }
 
         if (elseNode != null) {
-            ifStatement.setElseStatement(parseElseStatement(elseNode, scope));
+            ifStatement.setElseStatement(parseElseStatement(elseNode, scope, functionDeclaration));
         }
 
         return ifStatement;
     }
 
-    private ReturnStatement parseReturnStatement(ASTNode node, Scope scope) {
+    private ReturnStatement parseReturnStatement(ASTNode node, Scope scope, FunctionDeclaration functionDeclaration) {
         Symbol nodeSymbol = node.getSymbol();
 
         if (nodeSymbol != Nonterminal.ReturnStmt) {
@@ -134,7 +134,7 @@ public class IRBuilder {
         }
 
         ASTNode expressionNode = (ASTNode) node.getChildAt(1);
-        return new ReturnStatement(parseExpression(expressionNode, scope), scope);
+        return new ReturnStatement(parseExpression(expressionNode, scope), scope, functionDeclaration);
     }
 
     private Assignment parseStatement(ASTNode node, Scope scope) {
@@ -182,7 +182,7 @@ public class IRBuilder {
 
         FunctionDeclaration functionDeclaration = (FunctionDeclaration) scope.findByIdentifier(identifierNode.getString());
 
-        FunctionCall functionCall = new FunctionCall(functionDeclaration);
+        FunctionCall functionCall = new FunctionCall(functionDeclaration, node);
 
         // Iterates over children
         for (Enumeration e = callArguments.children(); e.hasMoreElements(); ) {
@@ -219,11 +219,12 @@ public class IRBuilder {
             return parseFunctionCall(node, scope);
         } else if (nodeToken == Token.IDENTIFIER) {
             StructureObject structureObject = scope.findByIdentifier(nodeString);
+            ASTNode parent = (ASTNode) node.getParent();
 
             if (structureObject instanceof VariableDeclaration) {
-                return new Variable((VariableDeclaration) structureObject);
+                return new VariableUse((VariableDeclaration) structureObject);
             } else if (structureObject instanceof FunctionDeclaration) {
-                return new FunctionCall((FunctionDeclaration) structureObject);
+                return new FunctionCall((FunctionDeclaration) structureObject, parent);
             } else {
                 throw new RuntimeException();
             }
@@ -280,7 +281,7 @@ public class IRBuilder {
                 throw new RuntimeException();
             }
 
-            FunctionCall functionCall = new FunctionCall(functionDeclaration);
+            FunctionCall functionCall = new FunctionCall(functionDeclaration, node);
             functionCall.setToken(getterNodeToken);
 
             ASTNode leftExpression = (ASTNode) getterNode.getPreviousSibling();
@@ -356,13 +357,13 @@ public class IRBuilder {
             } else if (childSymbol == Nonterminal.Stmt) {
                 scope.addStructure(parseStatement(child, scope));
             } else if (childSymbol == Nonterminal.ReturnStmt) {
-                scope.addStructure(parseReturnStatement(child, scope));
+                scope.addStructure(parseReturnStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.IfStmt) {
-                scope.addStructure(parseIfStatement(child, scope));
+                scope.addStructure(parseIfStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.ElseStmt) {
-                scope.addStructure(parseElseStatement(child, scope));
+                scope.addStructure(parseElseStatement(child, scope, functionDeclaration));
             } else if (childSymbol == Nonterminal.WhileStmt) {
-                scope.addStructure(parseWhileStatement(child, scope));
+                scope.addStructure(parseWhileStatement(child, scope, functionDeclaration));
             }
         }
 

@@ -3,8 +3,6 @@ package org.spl.common.structure;
 import org.spl.common.type.BasicType;
 import org.spl.common.type.Type;
 
-import java.util.ArrayList;
-
 public class VariableDeclaration extends StructureObject {
 
     private Assignment m_assignment;
@@ -37,19 +35,18 @@ public class VariableDeclaration extends StructureObject {
     }
 
     @Override
-    public void generateCode(Context context) {
+    public void generate(Context context) {
         Expression expression = m_assignment.getExpression();
         Type type = expression.getType();
         Integer size = expression.getSize();
 
         if (expression.isReference()) {
-            Variable referenceVariable = (Variable) expression;
-            VariableDeclaration referenceDeclaration = referenceVariable.getDeclaration();
+            VariableUse referenceVariableUse = (VariableUse) expression;
+            VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
 
-//            addReference(context, referenceDeclaration);
+            addReference(context, referenceDeclaration);
         } else {
-            context.addInstruction(new String[]{LOAD_CONSTANT, size.toString()});
-//            context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
+            context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
 
             if (type.isBasicType()) {
                 if (type.unify(new BasicType("Int"))) {
@@ -68,15 +65,19 @@ public class VariableDeclaration extends StructureObject {
             size += 2;
         }
 
-        expression.generateCode(context);
+        expression.generate(context);
 
         if (!expression.isReference()) {
-//            Integer correction = size - 1;
-            context.addInstruction(new String[]{STORE_MULTIPLE_ON_HEAP, size.toString()});
-//            context.addInstruction(new String[]{LOAD_CONSTANT, correction.toString()});
-//            context.addInstruction(new String[]{SUBTRACT});
+            if (size == 3) {
+                // Adds empty space in the block
+                context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+            }
+
+            // Stores the value on the heap
+            context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "initialise_variable"});
         }
 
+        context.addInstruction(new String[]{NO_OPERATION});
         context.addInstruction(new String[]{ANNOTE, "SP", "0", "0", "red", "\"var " + m_identifier + "\""});
 
         if (m_isGlobal) {
