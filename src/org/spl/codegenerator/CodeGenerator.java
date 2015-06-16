@@ -32,14 +32,24 @@ public class CodeGenerator {
 
         context.addInstruction(new String[]{HALT});
         scope.generateVariableInitialiser(context);
+
         scope.generateReferenceIncrementor(context);
         scope.generateReferenceDecrementor(context);
+
         scope.generateValueGetter(context);
+
         scope.generateVariableUtiliser(context);
         scope.generateBasicVariableUtiliser(context);
         scope.generateTupleUtiliser(context);
         scope.generateListUtiliser(context);
         scope.generateListElementUtiliser(context);
+
+        scope.generateVariableReferenceIncrementor(context);
+        scope.generateBasicVariableReferenceIncrementor(context);
+        scope.generateTupleReferenceIncrementor(context);
+        scope.generateListReferenceIncrementor(context);
+        scope.generateListElementReferenceIncrementor(context);
+
         scope.generatePrint(context);
         scope.generateGarbageCollector(context);
 

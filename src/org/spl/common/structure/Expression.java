@@ -83,7 +83,6 @@ public class Expression extends StructureObject {
     public void generateHeader(Context context) {
         Type type = getType();
 
-//        context.addInstruction(new String[]{LOAD_CONSTANT, bodySize.toString()});
         context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
 
         if (type.isBasicType()) {
@@ -131,6 +130,18 @@ public class Expression extends StructureObject {
 
             leftExpression.generateHeader(context);
             leftExpression.generateValue(context);
+
+            if (leftExpression.isReference()) {
+                context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "add_reference"});
+                context.addInstruction(new String[]{ADJUST, "-1"});
+
+                if (leftExpression.getSize() == 2) {
+                    context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "add_reference"});
+                    context.addInstruction(new String[]{ADJUST, "-1"});
+                }
+
+                leftExpression.generateValue(context);
+            }
 
             if (leftExpressionSize == 3) {
                 // Adds empty space in the block
