@@ -41,10 +41,10 @@ public class VariableDeclaration extends StructureObject {
         Integer size = expression.getSize();
 
         if (expression.isReference()) {
-            VariableUse referenceVariableUse = (VariableUse) expression;
-            VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
+            expression.generate(context);
 
-            addReference(context, referenceDeclaration);
+            context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "add_reference"});
+            context.addInstruction(new String[]{ADJUST, "-1"});
         } else {
             context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
 

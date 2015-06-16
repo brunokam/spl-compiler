@@ -1,14 +1,21 @@
+/*
 [Int] a = 8 : 9 : [];
 [Int] b = 10 : 11 : [];
 [[Int]] c = a : b : [];
 [[Int]] d = b : a : [];
+*/
 
+/*
 Void func1([[Int]] x) {
     [[[Int]]] e = c : x : [];
 
     print(e.tl.hd.hd.tl.hd);
 }
+*/
 
 Void main () {
-    func1(d);
+    //func1(d);
+    Int a = 5;
+    Int b = a;
+    b = 3;
 }

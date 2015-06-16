@@ -26,7 +26,7 @@ public class ReturnStatement extends StructureObject {
         Type type = getType();
         Integer size = m_expression.getSize();
 
-        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
 
         if (m_expression.isReference()) {
             m_expression.generate(context);

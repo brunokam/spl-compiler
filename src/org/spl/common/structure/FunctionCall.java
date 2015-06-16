@@ -59,6 +59,7 @@ public class FunctionCall extends Expression {
             }
         } else {
             context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "print"});
+            context.addInstruction(new String[]{ADJUST, "-1"});
         }
     }
 

@@ -14,7 +14,7 @@ Char get_character (Char c) {
 }
 
 // Given: function returning boolean
-Boolean get_bool (Bool b) {
+Bool get_bool (Bool b) {
     return b;
 }
 

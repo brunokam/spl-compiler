@@ -1,5 +1,6 @@
 package org.spl.common.structure;
 
+import org.spl.common.type.BasicType;
 import org.spl.common.type.Type;
 
 public class Assignment extends StructureObject {
@@ -28,66 +29,69 @@ public class Assignment extends StructureObject {
         String addressSize = type.getAddressSize().toString();
         String bodySize = type.getBodySize().toString();
 
-        m_expression.generate(context);
+        if (m_expression.isReference()) {
+            m_expression.generate(context);
 
-        if (context.containsLocal(m_variableDeclaration) || context.containsArgument(m_variableDeclaration)) {
-            // If the expression is reference (=> the expression is a variable)
-            if (m_expression.isReference()) {
-                VariableUse referenceVariableUse = (VariableUse) m_expression;
-                VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
-
-//                deleteReference(context, m_variableDeclaration);
-//                addReference(context, referenceDeclaration);
-
-                context.addInstruction(new String[]{STORE_MULTIPLE_LOCAL, addressPosition, addressSize});
-            } else {
-                saveHeapPointer(context);
-
-                if (type.isBasicType()) {
+            if (!m_variableDeclaration.equals(((VariableUse) m_expression).getDeclaration())) {
+                if (context.containsLocal(m_variableDeclaration) || context.containsArgument(m_variableDeclaration)) {
                     context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
-                    context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-                    context.addInstruction(new String[]{STORE_ON_HEAP});
-                } else if (type.isTupleType()) {
-                    context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
-                    context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-                    context.addInstruction(new String[]{STORE_MULTIPLE_ON_HEAP, bodySize});
-                } else if (type.isListType()) {
-                    // TODO
-                    context.addInstruction(new String[]{STORE_MULTIPLE_LOCAL, addressPosition, addressSize});
+                } else if (context.containsGlobal(m_variableDeclaration)) {
+                    context.addInstruction(new String[]{LOAD_REGISTER, "R5"});
+                    context.addInstruction(new String[]{LOAD_VIA_ADDRESS, addressPosition});
+                } else {
+                    throw new RuntimeException();
                 }
 
-                restoreHeapPointer(context);
+                context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "delete_reference"});
                 context.addInstruction(new String[]{ADJUST, "-1"});
             }
+
+            context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "add_reference"});
+        } else {
+            if (context.containsLocal(m_variableDeclaration) || context.containsArgument(m_variableDeclaration)) {
+                context.addInstruction(new String[]{LOAD_LOCAL, addressPosition});
+            } else if (context.containsGlobal(m_variableDeclaration)) {
+                context.addInstruction(new String[]{LOAD_REGISTER, "R5"});
+                context.addInstruction(new String[]{LOAD_VIA_ADDRESS, addressPosition});
+            } else {
+                throw new RuntimeException();
+            }
+
+            context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "delete_reference"});
+            context.addInstruction(new String[]{ADJUST, "-1"});
+
+            context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
+
+            if (type.isBasicType()) {
+                if (type.unify(new BasicType("Int"))) {
+                    context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+                } else if (type.unify(new BasicType("Bool"))) {
+                    context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
+                } else if (type.unify(new BasicType("Char"))) {
+                    context.addInstruction(new String[]{LOAD_CONSTANT, "2"});
+                }
+            } else if (type.isTupleType()) {
+                context.addInstruction(new String[]{LOAD_CONSTANT, "3"});
+            } else if (type.isListType()) {
+                context.addInstruction(new String[]{LOAD_CONSTANT, "4"});
+            }
+
+            m_expression.generate(context);
+
+            if (m_expression.getSize() == 1) {
+                // Adds empty space in the block
+                context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+            }
+
+            // Stores the value on the heap
+            context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "initialise_variable"});
+        }
+
+        if (context.containsLocal(m_variableDeclaration) || context.containsArgument(m_variableDeclaration)) {
+            context.addInstruction(new String[]{STORE_LOCAL, addressPosition});
         } else if (context.containsGlobal(m_variableDeclaration)) {
             context.addInstruction(new String[]{LOAD_REGISTER, "R5"});
-
-            // If the expression is reference (=> the expression is a variable)
-            if (m_expression.isReference()) {
-                VariableUse referenceVariableUse = (VariableUse) m_expression;
-                VariableDeclaration referenceDeclaration = referenceVariableUse.getDeclaration();
-
-//                deleteReference(context, m_variableDeclaration);
-//                addReference(context, referenceDeclaration);
-
-                context.addInstruction(new String[]{STORE_MULTIPLE_VIA_ADDRESS, addressPosition, addressSize});
-            } else {
-                saveHeapPointer(context);
-
-                if (type.isBasicType()) {
-                    context.addInstruction(new String[]{LOAD_VIA_ADDRESS, addressPosition});
-                    context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-                    context.addInstruction(new String[]{STORE_ON_HEAP});
-                } else if (type.isTupleType()) {
-                    context.addInstruction(new String[]{LOAD_VIA_ADDRESS, addressPosition});
-                    context.addInstruction(new String[]{STORE_REGISTER, "HP"});
-                    context.addInstruction(new String[]{STORE_MULTIPLE_ON_HEAP, bodySize});
-                } else if (type.isListType()) {
-                    // TODO
-                }
-
-                restoreHeapPointer(context);
-            }
+            context.addInstruction(new String[]{STORE_VIA_ADDRESS, addressPosition});
         }
     }
 

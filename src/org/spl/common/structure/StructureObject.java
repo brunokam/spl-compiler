@@ -5,7 +5,7 @@ import org.spl.common.type.Type;
 
 public abstract class StructureObject {
 
-    private final static Integer GARBAGE_COLLECTOR_BOUNDARY = 2256;
+    private final static Integer GARBAGE_COLLECTOR_BOUNDARY = 2096;
 
     protected final static String NO_OPERATION = "nop";
     protected final static String ANNOTE = "annote";
@@ -296,7 +296,13 @@ public abstract class StructureObject {
         context.addInstruction(new String[]{GE});
         context.addInstruction(new String[]{BRANCH_ON_FALSE, "vm_if"});
 
-//        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "collect_garbage"});
+        context.addInstruction(new String[]{LOAD_REGISTER, "HP"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "0"});
+        context.addInstruction(new String[]{EQ});
+        context.addInstruction(new String[]{BRANCH_ON_FALSE, "vm_if"});
+
+        context.addInstruction(new String[]{BRANCH_TO_SUBROUTINE, "collect_garbage"});
 
         // If value under HP == 0
         context.addInstruction(new String[]{"vm_if:", NO_OPERATION});
@@ -333,6 +339,46 @@ public abstract class StructureObject {
         context.addInstruction(new String[]{"vm_end_if:", NO_OPERATION});
 
         context.addInstruction(new String[]{LOAD_REGISTER, "RR"});
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateReferenceIncrementor(Context context) {
+        context.addInstruction(new String[]{"add_reference:", NO_OPERATION});
+
+        saveHeapPointer(context);
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
+        context.addInstruction(new String[]{ADD});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-2"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        restoreHeapPointer(context);
+
+        context.addInstruction(new String[]{RETURN});
+    }
+
+    public void generateReferenceDecrementor(Context context) {
+        context.addInstruction(new String[]{"delete_reference:", NO_OPERATION});
+
+        saveHeapPointer(context);
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-1"});
+        context.addInstruction(new String[]{LOAD_FROM_HEAP, "0"});
+        context.addInstruction(new String[]{LOAD_CONSTANT, "1"});
+        context.addInstruction(new String[]{SUBTRACT});
+
+        context.addInstruction(new String[]{LOAD_FROM_STACK, "-2"});
+        context.addInstruction(new String[]{STORE_REGISTER, "HP"});
+        context.addInstruction(new String[]{STORE_ON_HEAP});
+        context.addInstruction(new String[]{ADJUST, "-1"});
+
+        restoreHeapPointer(context);
+
         context.addInstruction(new String[]{RETURN});
     }
 

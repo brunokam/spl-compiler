@@ -67,8 +67,8 @@ public class Main {
             ASTNode AST = parser.parse(tokenList);
 
             // Prints string representation of the tree
-            String output = ASTToString(AST);
-//            System.out.println(output);
+            String ASTString = ASTToString(AST);
+//            System.out.println(ASTString);
 
             Binder binder = new Binder();
             Scope globalScope = binder.run(AST);
@@ -79,13 +79,18 @@ public class Main {
             CodeGenerator codeGenerator = new CodeGenerator();
             ArrayList<String[]> instructionList = codeGenerator.run(globalScope);
 
+            String outputString = "";
             for (String[] inst : instructionList) {
-                System.out.print(inst[0]);
+                outputString += inst[0];
                 for (int i = 1; i < inst.length; ++i) {
-                    System.out.print(" " + inst[i]);
+                    outputString += " " + inst[i];
                 }
-                System.out.println();
+                outputString += '\n';
             }
+
+            PrintWriter output = new PrintWriter("output.ssm");
+            output.print(outputString);
+            output.close();
 
             TypedPrettyPrinter prettyPrinter = new TypedPrettyPrinter();
 //            System.out.println("####### TYPED PRETTY PRINTER CODE #######");
